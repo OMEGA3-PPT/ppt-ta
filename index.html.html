@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Presentasi Proposal TA - Ahmad Yamil</title>
+    <!-- FIREBASE SDK (WAJIB ADA BUAT ONLINE) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <style>
+        :root {
+            --slide-max-width: 1400px;
+            --slide-max-height: 850px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body, html { background-color: #020617; color: #333; width: 100vw; height: 100vh; overflow: hidden; }
+
+        /* --- BLACKOUT SCREEN --- */
+        #blackout-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 999998; }
+
+        #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; color: white; z-index: 1000000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        #orientation-warning svg { width: 80px; height: 80px; fill: #3b82f6; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; }
+        @keyframes rotatePhone { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
+        @media screen and (max-width: 900px) and (orientation: portrait) { #orientation-warning { display: flex; } #main-ui { display: none !important; } }
+
+        #progress-bar { position: fixed; top: 0; left: 0; height: 6px; background: linear-gradient(90deg, #ea580c, #3b82f6); width: 0%; z-index: 1000; transition: width 0.4s ease; box-shadow: 0 2px 15px rgba(59,130,246,0.8); }
+
+        #main-ui { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .gradient-bg { position: absolute; width: 100%; height: 100%; z-index: -3; background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%); }
+        .bg-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background-image: radial-gradient(rgba(255,255,255,0.08) 2px, transparent 2px); background-size: 40px 40px; animation: panMainBg 25s linear infinite; }
+        @keyframes panMainBg { 0% { background-position: 0px 0px; } 100% { background-position: 80px 80px; } }
+        
+        .orb { position: absolute; border-radius: 50%; z-index: -1; filter: blur(60px); mix-blend-mode: screen; }
+        .orb-1 { width: 500px; height: 500px; background: rgba(37, 99, 235, 0.25); top: -100px; right: 0%; animation: float 15s infinite alternate ease-in-out; }
+        .orb-2 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.2); bottom: -150px; left: -100px; animation: float 18s infinite alternate-reverse ease-in-out; }
+        .orb-3 { width: 400px; height: 400px; background: rgba(147, 197, 253, 0.15); top: 35%; left: 35%; animation: float 12s infinite alternate ease-in-out; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(60px, 80px) scale(1.1); } }
+
+        /* --- UI CONTROLS --- */
+        .top-controls { position: fixed; top: 25px; right: 25px; z-index: 999999; display: flex; gap: 15px; align-items: center; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .icon-btn svg { width: 20px; height: 20px; fill: #334155; transition: 0.2s; }
+        .icon-btn:hover { transform: scale(1.1); background: #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .icon-btn:hover svg { fill: #3b82f6; }
+        
+        .secret-btn { display: none; } 
+        #btn-edit.editing { background: #ea580c; border: none; }
+        #btn-edit.editing svg { fill: white; }
+
+        /* --- MIC INDICATOR DOT --- */
+        .mic-dot-container { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; cursor: pointer; }
+        .mic-dot { width: 14px; height: 14px; border-radius: 50%; transition: 0.3s; }
+        .dot-green { background-color: #22c55e; box-shadow: 0 0 10px #22c55e; animation: blinkSlow 2s infinite; }
+        .dot-red { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; animation: blinkFast 0.8s infinite; }
+        @keyframes blinkSlow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } }
+        @keyframes blinkFast { 0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.5; transform: scale(0.8); } }
+
+        /* --- MIC TEST MODAL --- */
+        #mic-test-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-radius: 16px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 10000; text-align: center; border: 2px solid #3b82f6; }
+        #mic-test-modal h3 { color: #1e3a8a; margin-bottom: 5px; }
+        .voice-instruction { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; }
+        .voice-instruction ul { margin-left: 20px; color: #334155; font-size: 0.9em; line-height: 1.5; }
+        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 80px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1em; transition: 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-close { background: transparent; color: #64748b; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+
+        /* --- SETTINGS MODAL --- */
+        #settings-modal { display: none; position: fixed; top: 85px; right: 25px; width: 300px; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-radius: 16px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); z-index: 10000; border: 1px solid rgba(255,255,255,0.6); }
+        .setting-group { margin-bottom: 20px; }
+        .setting-group label { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9em; color: #475569; margin-bottom: 5px; }
+
+        /* --- INLINE EDIT TOOLBAR --- */
+        #inline-edit-toolbar { display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 15px; border-radius: 8px; z-index: 10001; gap: 8px; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #475569; }
+        .format-btn { background: transparent; color: white; border: 1px solid transparent; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .format-btn:hover { background: #334155; border-color: #64748b; }
+        .divider { width: 1px; height: 24px; background: #475569; margin: 0 5px; }
+        #active-font-val { font-weight: 900; color: #3b82f6; min-width: 35px; text-align: center; }
+
+        .is-editing .editable-target { outline: 2px dashed #3b82f6; outline-offset: 4px; background: rgba(59,130,246,0.02); border-radius: 8px; padding: 5px; transition: 0.2s; cursor: text; min-height: 50px; }
+        .is-editing .editable-target:focus { outline: 2px solid #3b82f6; background: rgba(59,130,246,0.08); }
+
+        /* --- KUNCI ANIMASI LIQUID --- */
+        @keyframes morphLiquid { 
+            0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg) scale(1); } 
+            100% { border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; transform: rotate(15deg) scale(1.05); } 
+        }
+
+        /* --- SLIDE CSS --- */
+        .slide { position: absolute; top: 50%; left: 50%; width: 96%; max-width: var(--slide-max-width); height: 88vh; max-height: var(--slide-max-height); background: #ffffff; box-shadow: 0 30px 60px rgba(0,0,0,0.4); border-radius: 24px; padding: 50px 70px; overflow-y: auto; overflow-x: hidden; opacity: 0; visibility: hidden; z-index: 5; display: flex; flex-direction: column; justify-content: flex-start; transform: translate(-50%, -50%) translateX(40px) scale(0.96); transition: all 0.6s cubic-bezier(0.25, 1, 0.2, 1); border-top: 8px solid #3b82f6; }
+        .slide.active { opacity: 1; visibility: visible; z-index: 10; transform: translate(-50%, -50%) translateX(0) scale(1); }
+        .slide::-webkit-scrollbar { width: 8px; }
+        .slide::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .slide-content-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; gap: 20px; }
+        .content-slide { overflow: hidden; }
+        .content-slide::before { content: ''; position: absolute; width: 600px; height: 600px; background: #3b82f6; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; top: -150px; right: -150px; opacity: 0.03; animation: morphLiquid 15s ease-in-out infinite alternate; pointer-events: none; z-index: 0; }
+        .content-slide::after { content: ''; position: absolute; width: 700px; height: 700px; background: #ea580c; border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; bottom: -200px; left: -200px; opacity: 0.02; animation: morphLiquid 18s ease-in-out infinite alternate-reverse; pointer-events: none; z-index: 0; }
+
+        .slide-header { border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; position: relative; z-index: 2; width: 100%; }
+        .tagline { font-size: 0.85em; color: #64748b; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; background: rgba(59,130,246,0.1); padding: 6px 15px; border-radius: 20px; display: inline-block; }
+        
+        h1 { font-size: 2.8em; color: #1e3a8a; line-height: 1.2; font-weight: 900; text-transform: uppercase; }
+        h2 { font-size: 2.1em; color: #2563eb; font-weight: 800; }
+        h3.section-title { color: #1e3a8a; margin-bottom: 15px; font-size: 1.4em; border-left: 4px solid #ea580c; padding-left: 12px; }
+        p, li { font-size: 1.2em; line-height: 1.6; color: #334155; margin-bottom: 15px; }
+        ul, ol { margin-left: 28px; margin-bottom: 25px; }
+        .drop-cap::first-letter { font-size: 2.5em; float: left; line-height: 0.8; padding-right: 10px; padding-top: 4px; color: #1e3a8a; font-weight: 900; }
+
+        .content-split { display: flex; gap: 40px; flex: 1; align-items: center; position: relative; z-index: 2; width: 100%; }
+        .text-col { flex: 2; display: flex; flex-direction: column; justify-content: center; }
+        .visual-col { flex: 0.8; display: flex; justify-content: center; align-items: center; position: relative; }
+
+        /* CAROUSEL */
+        .inner-carousel-container { width: 100%; flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .inner-carousel-track { display: flex; width: 400%; height: 100%; transition: transform 0.5s cubic-bezier(0.25, 1, 0.2, 1); }
+        .inner-carousel-slide { width: 25%; flex-shrink: 0; padding: 10px 5px; display: flex; flex-direction: column; justify-content: flex-start; height: 100%; }
+        .inner-dots-container { display: flex; justify-content: center; gap: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); }
+        .inner-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; cursor: pointer; transition: 0.3s; }
+        .inner-dot.active { background: #ea580c; transform: scale(1.3); }
+
+        /* FOCUS MODE */
+        .focusable { transition: all 0.3s ease; cursor: pointer; position: relative; padding: 6px 8px; border-radius: 6px; }
+        body:not(.is-editing) .focusable:hover { background: rgba(0,0,0,0.03); }
+        body:not(.is-editing) .slide.is-focusing .focusable:not(.focused) { opacity: 0.25; filter: grayscale(100%); }
+        body:not(.is-editing) .focusable.focused { transform: scale(1.02); background: #fffbeb; color: #b45309; box-shadow: -4px 0 0 #ea580c; }
+
+        /* DRAG & RESIZE */
+        .draggable-box { position: relative; resize: both; overflow: auto; transform: translate(0px, 0px); min-width: 250px; min-height: 150px; transition: box-shadow 0.2s; }
+        .drag-handle-card { position: absolute; top: 10px; right: 10px; cursor: move; display: none; background: #ea580c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8em; z-index: 100; font-weight: bold; }
+        .is-editing .drag-handle-card { display: block; }
+        .is-dragging { transition: none !important; opacity: 0.9; }
+
+        /* VISUAL ASSETS */
+        .voice-equalizer { display: flex; gap: 12px; align-items: flex-end; height: 160px; }
+        .voice-bar { width: 20px; border-radius: 20px; background: linear-gradient(180deg, #3b82f6, #ea580c); animation: equalize 1.2s infinite alternate ease-in-out; }
+        .voice-bar:nth-child(1) { height: 40px; animation-delay: 0.1s; } .voice-bar:nth-child(2) { height: 100px; animation-delay: 0.4s; }
+        .voice-bar:nth-child(3) { height: 160px; animation-delay: 0.2s; } .voice-bar:nth-child(4) { height: 80px; animation-delay: 0.5s; }
+        .voice-bar:nth-child(5) { height: 120px; animation-delay: 0.3s; }
+        @keyframes equalize { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(1); } }
+
+        .network-graphic { width: 200px; height: 200px; position: relative; animation: slowSpin 20s infinite linear; }
+        .node { position: absolute; width: 24px; height: 24px; background: #3b82f6; border-radius: 50%; box-shadow: 0 0 15px rgba(59,130,246,0.6); }
+        .node-1 { top: 10%; left: 45%; } .node-2 { bottom: 20%; left: 15%; background: #ea580c; } .node-3 { bottom: 20%; right: 15%; }
+        .line { position: absolute; background: rgba(59,130,246,0.3); transform-origin: top left; }
+        .line-1 { top: 15%; left: 50%; width: 2px; height: 120px; transform: rotate(35deg); } .line-2 { top: 15%; left: 50%; width: 2px; height: 120px; transform: rotate(-35deg); } .line-3 { bottom: 25%; left: 20%; width: 110px; height: 2px; transform: rotate(0deg); }
+        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
+
+        .wireframe-cube { width: 140px; height: 140px; transform-style: preserve-3d; animation: rotateCube 12s infinite linear; position: relative; margin: 0 auto; }
+        .face { position: absolute; width: 100%; height: 100%; border: 3px solid #3b82f6; background: rgba(59,130,246,0.05); }
+        .face-front { transform: translateZ(70px); } .face-back { transform: rotateY(180deg) translateZ(70px); } .face-left { transform: rotateY(-90deg) translateZ(70px); }
+        .face-right { transform: rotateY(90deg) translateZ(70px); } .face-top { transform: rotateX(90deg) translateZ(70px); } .face-bottom { transform: rotateX(-90deg) translateZ(70px); }
+        @keyframes rotateCube { 0% { transform: rotateX(0) rotateY(0); } 100% { transform: rotateX(360deg) rotateY(360deg); } }
+
+        .target-node { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
+        .target-ring { position: absolute; border: 3px solid #3b82f6; border-radius: 50%; opacity: 0; }
+        .target-ring:nth-child(1) { width: 30px; height: 30px; background: #ea580c; border: none; opacity: 1; z-index: 2; box-shadow: 0 0 20px rgba(234,88,12,0.6); }
+        .target-ring:nth-child(2) { width: 100%; height: 100%; animation: pingRing 2.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1); }
+        .target-ring:nth-child(3) { width: 100%; height: 100%; animation: pingRing 2.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1) 0.8s; }
+        @keyframes pingRing { 0% { transform: scale(0.2); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 0; } }
+
+        .svg-target { width: 160px; height: 160px; animation: pulseFloat 4s infinite alternate ease-in-out; }
+        @keyframes pulseFloat { 0% { transform: translateY(-5px) scale(0.98); } 100% { transform: translateY(5px) scale(1.02); } }
+
+        .quote-box { border-left: 6px solid #ea580c; background: linear-gradient(90deg, rgba(59,130,246,0.08), transparent); padding: 25px 30px; border-radius: 0 12px 12px 0; margin-bottom: 20px; width: 100%; }
+        .quote-box em { font-size: 1.15em; font-weight: 600; color: #1e3a8a; line-height: 1.5; display: block; }
+
+        .grid-2x2-large { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 25px; width: 100%; flex: 1; }
+        .grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; width: 100%; flex: 1; }
+        .grid-card { background: rgba(255,255,255,0.7); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; border-left: 6px solid #3b82f6; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.02); position: relative; z-index: 2; width: 100%; }
+
+        .data-container { display: flex; gap: 40px; margin-top: 20px; width: 100%; position: relative; z-index: 2; }
+        .data-card { flex: 1; background: rgba(255,255,255,0.8); padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;}
+        
+        .svg-chart { width: 140px; height: 140px; margin-bottom: 20px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .svg-chart svg { width: 100%; height: 100%; transform: rotate(-90deg); position: absolute; top: 0; left: 0; }
+        .donut-bg { fill: none; stroke: #e2e8f0; stroke-width: 12; }
+        .donut-fill { fill: none; stroke: #ea580c; stroke-width: 12; stroke-dasharray: 283; stroke-dashoffset: 283; stroke-linecap: round; }
+        .slide.active .donut-fill { animation: fillDonut 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s; }
+        @keyframes fillDonut { to { stroke-dashoffset: 12; } } 
+        .donut-text { font-size: 2em; font-weight: 800; color: #ea580c; z-index: 2; }
+        
+        .trend-chart { display: flex; align-items: center; justify-content: center; height: 140px; margin-bottom: 20px; gap: 5px; }
+        .trend-arrow { font-size: 4.5em; color: #dc2626; opacity: 0; transform: translateY(-20px); }
+        .slide.active .trend-arrow { animation: bounceArrow 0.8s forwards 0.5s; }
+        @keyframes bounceArrow { 100% { opacity: 1; transform: translateY(0); } }
+        .trend-number { font-size: 3.5em; font-weight: 800; color: #dc2626; }
+
+        .img-grid { display: flex; gap: 20px; flex: 1; width: 100%; position: relative; z-index: 2; margin-bottom: 10px; }
+        .img-wrapper { flex: 1; position: relative; border-radius: 16px; overflow: hidden; border: 3px dashed #cbd5e1; background-color: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; transition: 0.2s; min-height: 250px; }
+        .placeholder-content { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600; text-align: center; cursor: pointer; width: 100%; height: 100%; z-index: 2; font-size: 0.9em; padding: 10px; }
+        .draggable-img { position: absolute; cursor: grab; transform-origin: center; display: none; max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* TITLE SLIDE (ANIMASI UTUH) */
+        .title-slide-custom { padding: 0 !important; display: flex !important; flex-direction: row !important; align-items: stretch; border-top: none !important; }
+        .title-left-decor { width: 38%; position: relative; background-color: #ffffff; background-image: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 25px 25px; overflow: hidden; border-right: 1px solid #e2e8f0; animation: panDots 20s linear infinite; z-index: 1; }
+        .shape-blue { position: absolute; width: 600px; height: 600px; background: #3b82f6; top: -200px; left: -250px; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; animation: morphLiquid 8s ease-in-out infinite alternate; z-index: 2; }
+        .shape-orange { position: absolute; width: 450px; height: 450px; background: #ea580c; bottom: -150px; right: -200px; border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; animation: morphLiquid 10s ease-in-out infinite alternate-reverse; z-index: 2; }
+        .title-right-content { width: 62%; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; background: #ffffff; position: relative; z-index: 3; }
+        .badge-dark { background: #1e293b; color: #ffffff; padding: 8px 22px; border-radius: 30px; font-size: 0.85em; font-weight: 800; letter-spacing: 2px; margin-bottom: 30px; align-self: flex-start; cursor: pointer; }
+        .info-grid { display: flex; gap: 40px; border-top: 2px solid #f1f5f9; padding-top: 35px; margin-top: 35px;}
+
+        /* CLOSING SLIDE */
+        .closing-slide { display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; text-align: center; border-top: none !important; background: #0f172a !important; padding: 0 !important; }
+        .closing-text-wrapper { opacity: 0; transform: scale(0.5) translateY(20px); }
+        .slide.active .closing-text-wrapper { animation: textPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s; }
+        .closing-text { font-weight: 900; letter-spacing: 5px; margin: 0; background: linear-gradient(90deg, #3b82f6, #60a5fa, #ea580c, #f97316, #3b82f6); background-size: 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradientFlow 4s linear infinite; }
+        @keyframes textPop { to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
+        /* CONTROLS BAWAH */
+        .controls { position: absolute; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 25px; z-index: 100; pointer-events: none; }
+        .controls > * { pointer-events: auto; }
+        button.nav-btn { padding: 12px 30px; font-size: 1.1em; cursor: pointer; background: #2563eb; color: white; border: none; border-radius: 30px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
+        button.nav-btn:hover:not(:disabled) { background: #1d4ed8; transform: scale(1.05) translateY(-2px); }
+        button.nav-btn:disabled { background: #1e293b; cursor: not-allowed; color: #64748b; box-shadow: none; }
+        #page-num { font-size: 1.15em; font-weight: 800; color: #1e293b; min-width: 90px; text-align: center; background: rgba(255,255,255,0.95); padding: 10px 20px; border-radius: 30px; }
+    </style>
+</head>
+<body>
+    
+    <!-- LAYAR GELAP (BLACKOUT) -->
+    <div id="blackout-screen"></div>
+
+    <div id="orientation-warning">
+        <svg viewBox="0 0 24 24"><path d="M16.48 2.52c3.27 1.55 5.61 4.72 5.97 8.48h1.5C23.44 4.84 18.29 0 12 0l-.66.03 3.81 3.81 1.33-1.32zm-6.25-.77c-.59-.59-1.54-.59-2.12 0L1.75 8.11c-.59.59-.59 1.54 0 2.12l12.02 12.02c.59.59 1.54.59 2.12 0l6.36-6.36c.59-.59.59-1.54 0-2.12L10.23 1.75zm4.6 19.46L2.81 9.17l6.36-6.36 12.02 12.02-6.36 6.38zM2.05 13h1.5c.36 3.76 2.7 6.93 5.97 8.48l-1.33-1.32-3.81 3.81.66.03c6.29 0 11.44-4.84 11.95-11h-1.5c-.36 3.76-2.7 6.93-5.97 8.48l1.33-1.32-3.81-3.81-.66.03c-6.29 0-11.44 4.84-11.95 11z"/></svg>
+        <h2 style="margin-bottom: 10px;">Putar Perangkat</h2>
+    </div>
+
+    <!-- UI IKON POJOK KANAN ATAS -->
+    <div class="top-controls">
+        <!-- Titik Lampu Mic (Selalu Muncul & Kebal Blackout) -->
+        <div class="mic-dot-container" onclick="triggerMicCheck()" title="Voice Command">
+            <div id="mic-dot" class="mic-dot dot-green"></div>
+        </div>
+        
+        <!-- Tombol Settings -->
+        <button id="btn-settings" class="icon-btn secret-btn" onclick="toggleSettingsPanel()" title="Pengaturan Ukuran">
+            <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+        </button>
+        <!-- Tombol Reset -->
+        <button id="btn-reset" class="icon-btn secret-btn" onclick="resetSemuaEditan()" title="Reset Semua Data">
+            <svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg>
+        </button>
+        <!-- Tombol Edit -->
+        <button id="btn-edit" class="icon-btn secret-btn" onclick="toggleEditMode()" title="Mode Edit Teks">
+            <svg id="svg-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            <svg id="svg-save" viewBox="0 0 24 24" style="display:none;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+        </button>
+    </div>
+
+    <!-- MODAL CEK SOUND VOICE COMMAND -->
+    <div id="mic-test-modal">
+        <h3>Cek Sound Voice Command</h3>
+        <p style="font-size: 0.9em; color: #475569; margin-bottom: 5px;">Bicara ke mic. Berikut daftar perintah yang tersedia:</p>
+        <ul style="text-align: left; font-size: 0.85em; color: #475569; margin: 10px 0; padding-left: 20px;">
+            <li><b>"01 lanjut"</b> / <b>"01 next"</b> ➡️ Slide berikutnya</li>
+            <li><b>"01 kembali"</b> ➡️ Slide sebelumnya</li>
+            <li><b>"01 off"</b> / <b>"01 mati"</b> ➡️ Menggelapkan layar</li>
+            <li><b>"01 on"</b> / <b>"01 nyala"</b> ➡️ Menghidupkan layar</li>
+            <li><b>"01 buka [nama slide]"</b> ➡️ Lompat (Contoh: <i>"01 buka metode"</i>)</li>
+        </ul>
+        <div id="live-transcript">Bicara sekarang...</div>
+        <button class="btn-primary" onclick="startRealVoice()">▶ Mulai Presentasi</button>
+        <button class="btn-close" onclick="closeMicModal()">Matikan Mic</button>
+    </div>
+
+    <!-- TOOLBAR EDIT TEKS ALA WORD -->
+    <div id="inline-edit-toolbar">
+        <button class="format-btn" onclick="formatText('bold')" title="Bold"><b>B</b></button>
+        <button class="format-btn" onclick="formatText('italic')" title="Italic"><i>I</i></button>
+        <button class="format-btn" onclick="formatText('underline')" title="Underline"><u>U</u></button>
+        <div class="divider"></div>
+        <button class="format-btn" onclick="formatText('justifyLeft')" title="Rata Kiri">↤</button>
+        <button class="format-btn" onclick="formatText('justifyCenter')" title="Rata Tengah">↔</button>
+        <button class="format-btn" onclick="formatText('justifyRight')" title="Rata Kanan">↦</button>
+        <button class="format-btn" onclick="formatText('justifyFull')" title="Rata Penuh (Justify)">≡</button>
+        <div class="divider"></div>
+        <button class="format-btn" onclick="changeActiveFontSize(-0.1)">-</button>
+        <span id="active-font-val">1.0</span>
+        <button class="format-btn" onclick="changeActiveFontSize(0.1)">+</button>
+    </div>
+
+    <!-- MODAL PENGATURAN BINGKAI -->
+    <div id="settings-modal">
+        <h3 style="color:#1e3a8a; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Pengaturan Bingkai</h3>
+        <div class="setting-group">
+            <label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label>
+            <input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()" onchange="saveSettings()">
+        </div>
+        <div class="setting-group">
+            <label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label>
+            <input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()" onchange="saveSettings()">
+        </div>
+        <button onclick="toggleSettingsPanel()" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tutup</button>
+    </div>
+
+    <div id="main-ui">
+        <div id="progress-bar"></div>
+        <div class="gradient-bg"></div>
+        <div class="bg-pattern"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+
+        <!-- SLIDE 1: JUDUL -->
+        <div class="slide active title-slide-custom">
+            <div class="title-left-decor">
+                <div class="shape-blue"></div>
+                <div class="shape-orange"></div>
+            </div>
+            <div class="title-right-content">
+                <span class="badge-dark" id="secret-trigger" title="Klik 3x untuk mode edit">SEMINAR PROPOSAL</span>
+                <div class="editable-target" id="txt-canvas-1">
+                    <h1 style="color: #0f172a; line-height: 1.15;">DESAIN KARAKTER MASKOT TH GROUP CHANNEL<br><span style="color: #3b82f6;">SEBAGAI ASET VISUAL PENDUKUNG KONTEN DIGITAL</span></h1>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-author editable-target" id="txt-canvas-2">
+                        <span style="font-size: 0.8em; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 8px; display: block;">OLEH</span>
+                        <p style="font-weight: 900; color: #0f172a; margin-bottom: 5px; font-size:1.25em;">Ahmad Yamil</p>
+                        <p style="color: #64748b; font-weight: 600; margin-bottom: 10px;">NIM: 21027003</p>
+                        <p style="color: #64748b; font-weight: 600; margin-bottom: 10px; margin-top: 15px;">Desain Komunikasi Visual<br>Universitas Negeri Padang</p>
+                    </div>
+                    <div class="info-dosen editable-target" id="txt-canvas-3">
+                        <div style="margin-bottom:15px;">
+                            <span style="font-size: 0.8em; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 8px; display: block;">DOSEN PEMBIMBING</span>
+                            <p style="font-weight: 900; color: #0f172a; font-size:1.25em;">Hendra Afriwan, M.Sn.</p>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <span style="font-size: 0.8em; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 8px; display: block;">DOSEN KONTRIBUTOR 1</span>
+                            <p style="font-weight: 900; color: #0f172a; font-size:1.25em;">[Nama Kontributor 1]</p>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.8em; color: #64748b; font-weight: 800; letter-spacing: 1.5px; margin-bottom: 8px; display: block;">DOSEN KONTRIBUTOR 2</span>
+                            <p style="font-weight: 900; color: #0f172a; font-size:1.25em;">[Nama Kontributor 2]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: LATAR BELAKANG -->
+        <div class="slide content-slide" data-name="latar belakang">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-4"><h2>Latar Belakang</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-5">
+                        <p class="drop-cap">Ekosistem konten digital di Indonesia tumbuh sangat pesat. Berdasarkan laporan, terdapat lebih dari 3.000 kanal YouTube di Indonesia yang mencapai lebih dari satu juta subscriber, angka tertinggi di Asia Tenggara yang memicu persaingan sangat ketat.</p>
+                        <p>Di tengah ekosistem tersebut, <strong>TH Group Channel</strong> hadir sebagai kanal ulasan animasi yang konsisten memproduksi konten sejak tahun 2016 secara lintas platform (YouTube, TikTok, dan Instagram).</p>
+                        <p>Kanal ini rutin mengunggah berbagai format konten dan berhasil mengumpulkan basis audiens yang besar. Untuk dapat terus bertahan dan berkembang di ceruk yang jenuh, kanal dituntut untuk memiliki ciri khas kuat agar mudah dikenali oleh audiensnya.</p>
+                    </div>
+                    <div class="visual-col">
+                        <div class="voice-equalizer"><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: PERMASALAHAN -->
+        <div class="slide content-slide" data-name="permasalahan">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-6"><h2>Permasalahan</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="editable-target focusable" id="txt-canvas-7">
+                    <p>Pemilik kanal telah mencoba berbagai cara untuk tampil beda (mengubah gaya <i>thumbnail</i>, cara <i>editing</i>, hingga topik bahasan). Namun, inovasi tersebut sangat mudah ditiru oleh kompetitor. Ketiadaan diferensiasi visual yang solid berdampak langsung pada performa:</p>
+                </div>
+                <div class="data-container focusable">
+                    <div class="data-card draggable-box" id="box-data-1">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="trend-chart">
+                            <span class="trend-arrow">⬇</span>
+                            <div class="trend-number"><span id="count1">0</span>%</div>
+                        </div>
+                        <div class="editable-target" id="txt-canvas-8">
+                            <p>Pertumbuhan subscriber <strong>mengalami penurunan 35%</strong> dibandingkan periode 365 hari sebelumnya.</p>
+                        </div>
+                    </div>
+                    <div class="data-card draggable-box" id="box-data-2">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="svg-chart">
+                            <svg viewBox="0 0 100 100"><circle class="donut-bg" cx="50" cy="50" r="45"></circle><circle class="donut-fill" cx="50" cy="50" r="45"></circle></svg>
+                            <div class="donut-text"><span id="count2">0</span>%</div>
+                        </div>
+                        <div class="editable-target" id="txt-canvas-9">
+                            <p>Sebesar <strong>95,7%</strong> total waktu tonton berasal dari penonton yang <strong>belum berlangganan</strong> (unsubscribed).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: SOLUSI -->
+        <div class="slide content-slide" data-name="solusi perancangan">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-10"><h2>Solusi Perancangan</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-11">
+                        <p>Ketiadaan representasi visual bagi kelima pengisi suara dan kanal itu sendiri tidak dapat dijawab hanya dengan logo, karena logo bersifat statis dan tunggal.</p>
+                        <p>Solusi utamanya adalah merancang <span style="color: #ea580c; font-weight: bold;">Karakter Maskot 3D sebagai Aset Visual Orisinal</span>:</p>
+                        <ul>
+                            <li><strong>Aset Visual Pembeda:</strong> Desain maskot orisinal jauh lebih sulit ditiru oleh kompetitor dibandingkan sekadar mengubah gaya <i>editing</i> atau <i>thumbnail</i>.</li>
+                            <li><strong>Representasi Individu:</strong> 5 varian karakter (dibedakan via warna & aksesori) untuk memberi wujud visual pada tiap pengisi suara.</li>
+                            <li><strong>Wajah Sentral Kanal:</strong> Menjadi figur utama lintas platform (YouTube, TikTok, IG) untuk membangun ikatan emosional dengan audiens.</li>
+                        </ul>
+                    </div>
+                    <div class="visual-col">
+                        <div class="wireframe-cube"><div class="face face-front"></div><div class="face face-back"></div><div class="face face-left"></div><div class="face face-right"></div><div class="face face-top"></div><div class="face face-bottom"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: IDENTIFIKASI -->
+        <div class="slide content-slide" data-name="identifikasi masalah">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-12"><h2>Identifikasi Masalah</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-13">
+                        <ol>
+                            <li style="margin-bottom: 25px;">Tingginya tingkat persaingan di segmen ulasan animasi, di mana kompetitor dengan mudah meniru gaya konten (<i>thumbnail</i> dan <i>editing</i>) milik TH Group Channel.</li>
+                            <li style="margin-bottom: 25px;">Kanal mengalami perlambatan pertumbuhan dan kesulitan mengkonversi penonton kasual menjadi penonton loyal yang menetap.</li>
+                            <li>Kelima pengisi suara kanal tidak memiliki representasi karakter visual sama sekali, sehingga audiens tidak memiliki figur untuk membangun ikatan emosional (hubungan parasosial).</li>
+                        </ol>
+                    </div>
+                    <div class="visual-col">
+                        <div class="network-graphic"><div class="line line-1"></div><div class="line line-2"></div><div class="line line-3"></div><div class="node node-1"></div><div class="node node-2"></div><div class="node node-3"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: BATASAN MASALAH -->
+        <div class="slide content-slide" data-name="batasan masalah">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-14"><h2>Batasan Masalah</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-15">
+                        <ul>
+                            <li style="margin-bottom: 25px;">Perancangan difokuskan murni pada penciptaan desain karakter maskot 3D sebagai aset visual pendukung kanal.</li>
+                            <li style="margin-bottom: 25px;">Penciptaan spesifik pada 5 varian maskot dengan pembeda warna dan aksesori untuk merepresentasikan tiap pengisi suara.</li>
+                            <li style="margin-bottom: 25px;">Hasil akhir berupa panduan visual dan turunan aset yang fungsional untuk YouTube, TikTok, dan Instagram.</li>
+                            <li>Tanggung jawab perancangan terbatas pada penyediaan solusi visual. Keberhasilan konversi audiens dan eksekusi pemasaran ke depannya adalah wewenang penuh pemilik kanal.</li>
+                        </ul>
+                    </div>
+                    <div class="visual-col">
+                        <svg class="svg-target" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: RUMUSAN & TUJUAN -->
+        <div class="slide content-slide" data-name="rumusan masalah">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-16"><h2>Rumusan & Tujuan Perancangan</h2></div>
+                <span class="tagline">PENDAHULUAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-17">
+                        <h3 class="section-title">Rumusan Masalah</h3>
+                        <div class="quote-box">
+                            <em>"Bagaimana merancang desain karakter maskot TH Group Channel sebagai aset visual pendukung konten digital yang dapat merepresentasikan tiap pengisi suara serta menjadi wajah tetap kanal di hadapan audiens?"</em>
+                        </div>
+                        <h3 class="section-title" style="margin-top:20px;">Tujuan Perancangan</h3>
+                        <ul>
+                            <li>Merancang 5 varian karakter maskot yang secara fungsional merepresentasikan setiap pengisi suara dalam tim produksi.</li>
+                            <li>Menghadirkan karakter maskot yang berkelanjutan (sustainable) untuk diterapkan di berbagai platform distribusi konten.</li>
+                        </ul>
+                    </div>
+                    <div class="visual-col">
+                        <div class="target-node"><div class="target-ring"></div><div class="target-ring"></div><div class="target-ring"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: KAJIAN PRAKSIS -->
+        <div class="slide content-slide" data-name="kajian praksis">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-18"><h2>Kajian Praksis</h2></div>
+                <span class="tagline">KAJIAN PUSTAKA</span>
+            </div>
+            <div class="slide-content-wrapper" style="justify-content: space-between;">
+                <div class="inner-carousel-container">
+                    <div class="inner-carousel-track" id="kp-track">
+                        <!-- TAB 1 -->
+                        <div class="inner-carousel-slide">
+                            <div class="editable-target focusable" id="txt-canvas-19">
+                                <h3 class="section-title">Data Verbal: Analisis Entitas & Kompetitor</h3>
+                                <p><strong>TH Group Channel:</strong> Kanal ulasan animasi yang berdiri sejak 2016, digerakkan oleh 5 pengisi suara utama secara bergantian.</p>
+                                <p><strong>Kondisi Lapangan:</strong> Upaya diferensiasi melalui pengubahan gaya konten terbukti selalu berhasil ditiru. Ketiadaan wujud bagi kelima pengisi suara juga menghambat terbangunnya ikatan emosional (<i>parasosial</i>) penonton dengan kanal.</p>
+                                <p><strong>Kanal Kompetitor:</strong> Terdapat tekanan dari kompetitor di segmen yang sama (seperti <i>Nas4rt Pedia, Note,</i> dan <i>Blitz Strike X</i>). Ketiganya secara kasat mata belum memiliki maskot orisinal sebagai identitas, menciptakan peluang strategis pembeda bagi TH Group Channel.</p>
+                            </div>
+                        </div>
+                        <!-- TAB 2 -->
+                        <div class="inner-carousel-slide">
+                            <div class="editable-target" id="txt-canvas-20"><h3 class="section-title">Data Visual: Identitas Internal Saat Ini</h3></div>
+                            <input type="file" id="up-kp1" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp1')">
+                            <input type="file" id="up-kp2" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp2')">
+                            <div class="img-grid" style="gap: 40px;">
+                                <div class="img-wrapper" id="box-kp1" ondblclick="if(!isEditMode) document.getElementById('up-kp1').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Double-Click<br>Upload Logo Kanal</div>
+                                </div>
+                                <div class="img-wrapper" id="box-kp2" ondblclick="if(!isEditMode) document.getElementById('up-kp2').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Double-Click<br>Upload Tampilan Tag Name</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- TAB 3 -->
+                        <div class="inner-carousel-slide">
+                            <div class="editable-target" id="txt-canvas-21"><h3 class="section-title">Data Visual: Visual Konten & Lintas Platform</h3></div>
+                            <input type="file" id="up-kp3" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp3')">
+                            <input type="file" id="up-kp4" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp4')">
+                            <input type="file" id="up-kp5" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp5')">
+                            <div class="img-grid">
+                                <div class="img-wrapper" id="box-kp3" ondblclick="if(!isEditMode) document.getElementById('up-kp3').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Upload Bukti Pakai Karakter Pinjaman</div>
+                                </div>
+                                <div class="img-wrapper" id="box-kp4" ondblclick="if(!isEditMode) document.getElementById('up-kp4').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Upload Feed Instagram</div>
+                                </div>
+                                <div class="img-wrapper" id="box-kp5" ondblclick="if(!isEditMode) document.getElementById('up-kp5').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Upload Feed TikTok</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- TAB 4 -->
+                        <div class="inner-carousel-slide">
+                            <div class="editable-target" id="txt-canvas-22"><h3 class="section-title">Data Visual: Analisis Kompetitor Tanpa Maskot</h3></div>
+                            <input type="file" id="up-kp6" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp6')">
+                            <input type="file" id="up-kp7" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp7')">
+                            <input type="file" id="up-kp8" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp8')">
+                            <div class="img-grid">
+                                <div class="img-wrapper" id="box-kp6" ondblclick="if(!isEditMode) document.getElementById('up-kp6').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Kompetitor 1<br>(Nas4rt Pedia)</div>
+                                </div>
+                                <div class="img-wrapper" id="box-kp7" ondblclick="if(!isEditMode) document.getElementById('up-kp7').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Kompetitor 2<br>(Note)</div>
+                                </div>
+                                <div class="img-wrapper" id="box-kp8" ondblclick="if(!isEditMode) document.getElementById('up-kp8').click()">
+                                    <div class="placeholder-content"><span>📷</span><br>Kompetitor 3<br>(Blitz Strike X)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inner-dots-container">
+                    <div class="inner-dot active" onclick="goToInnerSlide(0)"></div>
+                    <div class="inner-dot" onclick="goToInnerSlide(1)"></div>
+                    <div class="inner-dot" onclick="goToInnerSlide(2)"></div>
+                    <div class="inner-dot" onclick="goToInnerSlide(3)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: KARYA RELEVAN -->
+        <div class="slide content-slide" data-name="karya relevan">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-23"><h2>Karya Relevan</h2></div>
+                <span class="tagline">KAJIAN PUSTAKA</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="grid-2x2-large">
+                    <div class="grid-card focusable draggable-box" id="box-kr-1">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-24">
+                            <h3>1. Ochobot (BoBoiBoy)</h3>
+                            <p>Karakter robot produksi Monsta dengan nuansa mekanik dan industrial. Menjadi inspirasi bentuk dasar bulat dengan elemen futuristik.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-kr-2">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-25">
+                            <h3>2. Cimubot (Papa Zola)</h3>
+                            <p>Rujukan rupa robot yang menghadirkan kesan lebih lembut, ekspresif dan ramah, untuk mengimbangi bentuk mekanis yang kaku.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-kr-3">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-26">
+                            <h3>3. Maskot VTuber Falkana</h3>
+                            <p>Kajian Jurnal BARIK (2025). Menggambarkan perbedaan pendekatan representasi entitas digital perusahaan tunggal vs multi-individu.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-kr-4">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-27">
+                            <h3>4. 3D Ekraf Banyumas</h3>
+                            <p>Kajian Prosiding CENTIVE (2024). Menjadi studi komparasi teknis pemodelan 3D berbasis Blender untuk kebutuhan identitas non-game.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 10: METODE PERANCANGAN -->
+        <div class="slide content-slide" data-name="metode perancangan">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-28"><h2>Metode Perancangan & Data</h2></div>
+                <span class="tagline">METODE PERANCANGAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="content-split">
+                    <div class="text-col editable-target focusable" id="txt-canvas-29">
+                        <h3 class="section-title">Pendekatan Research & Development (4D)</h3>
+                        <ol style="margin-bottom: 25px;">
+                            <li><strong>Define:</strong> Mengidentifikasi ketiadaan wujud kanal & peluang absennya maskot di lini kompetitor.</li>
+                            <li><strong>Design:</strong> Merancang sketsa alternatif dengan perpaduan nuansa mekanik dan ramah (pembeda di aksesori).</li>
+                            <li><strong>Develop:</strong> Proses eksekusi pemodelan 3D di Blender (Base model, Pewarnaan, Rigging, Render).</li>
+                            <li><strong>Disseminate:</strong> Penerapan maskot ke dalam material visual pendukung (YouTube, IG, TikTok).</li>
+                        </ol>
+                        <h3 class="section-title">Teknik Pengumpulan Data</h3>
+                        <p style="margin-bottom: 0;"><strong>Primer:</strong> Observasi analitik konten kanal & wawancara arah visual dengan pemilik.<br>
+                        <strong>Sekunder:</strong> Studi literatur perancangan maskot, psikologi warna, dan jurnal teknis 3D.</p>
+                    </div>
+                    <div class="visual-col">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 150px; height: 150px; animation: slowSpin 15s infinite linear;">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: 5W1H -->
+        <div class="slide content-slide" data-name="analisis data">
+            <div class="slide-header">
+                <div class="editable-target" id="txt-canvas-30"><h2>Analisis Data (5W+1H)</h2></div>
+                <span class="tagline">METODE PERANCANGAN</span>
+            </div>
+            <div class="slide-content-wrapper">
+                <div class="grid-3x2">
+                    <div class="grid-card focusable draggable-box" id="box-5w-1">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-31">
+                            <h3>WHAT (Apa)</h3>
+                            <p>Ketiadaan karakter maskot orisinal yang mewakili kanal dan kelima pengisi suaranya.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-2">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-32">
+                            <h3>WHO (Siapa)</h3>
+                            <p>Pemilik kanal yang rentan plagiasi konten, dan audiens yang tak punya objek visual.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-3">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-33">
+                            <h3>WHEN (Kapan)</h3>
+                            <p>Mendesak saat ini, merespon tren penurunan subscriber kanal (turun 35%).</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-4">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-34">
+                            <h3>WHERE (Di Mana)</h3>
+                            <p>Sangat dibutuhkan di YouTube (utama), yang juga menjalar ke TikTok dan IG.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-5">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-35">
+                            <h3>WHY (Mengapa)</h3>
+                            <p>Eksperimen visual lain (thumbnail) mudah ditiru. Kompetitor belum pakai maskot.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-6">
+                        <div class="drag-handle-card">✥ Geser</div>
+                        <div class="editable-target" id="txt-canvas-36">
+                            <h3>HOW (Bagaimana)</h3>
+                            <p>Menciptakan desain 5 maskot 3D fungsional yang mewakili individu pengisi suara.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 12: PENUTUP -->
+        <div class="slide closing-slide" data-name="penutup">
+            <div class="editable-target closing-text-wrapper" id="txt-canvas-37" style="text-align: center; width: 100%;">
+                <h1 class="closing-text" style="font-size: 5em;">TERIMA KASIH</h1>
+            </div>
+        </div>
+
+        <!-- Navigasi Bawah -->
+        <div class="controls">
+            <button id="prevBtn" class="nav-btn" onclick="changeSlide(-1)">❮ Prev</button>
+            <span id="page-num">1 / 12</span>
+            <button id="nextBtn" class="nav-btn" onclick="changeSlide(1)">Next ❯</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT FIREBASE & LOGIKA UTAMA -->
+    <script>
+        // INISIALISASI FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCUYPie12Vd_mEkOH-Z6VbFHm8L4mkUJk",
+            authDomain: "ppt-ta.firebaseapp.com",
+            projectId: "ppt-ta",
+            storageBucket: "ppt-ta.firebasestorage.app",
+            messagingSenderId: "228724145382",
+            appId: "1:228724145382:web:e0749b8433800f26598f27"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- 1. SETTINGS & CSS VARIABLES (FIREBASE) ---
+        function toggleSettingsPanel() { document.getElementById('settings-modal').style.display = document.getElementById('settings-modal').style.display === 'block' ? 'none' : 'block'; }
+        function updateSlideDimensions() {
+            const w = document.getElementById('set-width').value; const h = document.getElementById('set-height').value;
+            document.getElementById('val-width').innerText = w + "px"; document.getElementById('val-height').innerText = h + "px";
+            document.documentElement.style.setProperty('--slide-max-width', w + 'px'); document.documentElement.style.setProperty('--slide-max-height', h + 'px');
+        }
+        function saveSettings() {
+            const settings = { w: document.getElementById('set-width').value, h: document.getElementById('set-height').value };
+            db.ref('ta_dimensi').set(settings);
+        }
+        function loadSettings() {
+            db.ref('ta_dimensi').once('value').then((snapshot) => {
+                const saved = snapshot.val();
+                if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; updateSlideDimensions(); }
+            });
+        }
+
+        // --- 2. FIREBASE TEXT, BOX, & IMAGE SYNC ---
+        function saveTextEdits() {
+            const edits = {};
+            document.querySelectorAll('.editable-target').forEach(el => { edits[el.id] = { html: el.innerHTML, fs: el.style.fontSize }; });
+            db.ref('ta_text').set(edits);
+        }
+        function loadTextEdits() {
+            db.ref('ta_text').once('value').then((snapshot) => {
+                const savedText = snapshot.val();
+                if (savedText) {
+                    document.querySelectorAll('.editable-target').forEach(el => {
+                        if (savedText[el.id]) { el.innerHTML = savedText[el.id].html; if(savedText[el.id].fs) el.style.fontSize = savedText[el.id].fs; }
+                    });
+                }
+            });
+        }
+
+        function saveBoxState(boxElement) {
+            db.ref('ta_box/' + boxElement.id).set({ w: boxElement.style.width, h: boxElement.style.height, x: boxElement.dataset.x || 0, y: boxElement.dataset.y || 0 });
+        }
+        function loadBoxState() {
+            db.ref('ta_box').once('value').then((snapshot) => {
+                const savedBoxes = snapshot.val();
+                if(savedBoxes) {
+                    document.querySelectorAll('.draggable-box').forEach(box => {
+                        if(savedBoxes[box.id]) {
+                            box.style.width = savedBoxes[box.id].w; box.style.height = savedBoxes[box.id].h; 
+                            box.dataset.x = savedBoxes[box.id].x; box.dataset.y = savedBoxes[box.id].y; 
+                            box.style.transform = `translate(${savedBoxes[box.id].x}px, ${savedBoxes[box.id].y}px)`;
+                        }
+                    });
+                }
+            });
+        }
+
+        function saveImageState(boxId, imgElement) {
+            const imgData = { src: imgElement.src, x: imgElement.dataset.x || 0, y: imgElement.dataset.y || 0, scale: imgElement.dataset.scale || 1 };
+            db.ref('ta_img/' + boxId).set(imgData).catch(e => console.warn("Gambar terlalu besar untuk database realtime."));
+        }
+        function loadImagesState() {
+            db.ref('ta_img').once('value').then((snapshot) => {
+                const savedImgs = snapshot.val();
+                if(savedImgs) {
+                    const boxes = ['box-kp1', 'box-kp2', 'box-kp3', 'box-kp4', 'box-kp5', 'box-kp6', 'box-kp7', 'box-kp8'];
+                    boxes.forEach(boxId => {
+                        if (savedImgs[boxId]) {
+                            const savedImg = savedImgs[boxId];
+                            const box = document.getElementById(boxId);
+                            if(box) {
+                                box.classList.add('has-image'); box.querySelector('.placeholder-content').style.display = 'none';
+                                let img = box.querySelector('img.draggable-img');
+                                if (!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); }
+                                img.src = savedImg.src; img.style.display = 'block';
+                                img.dataset.x = savedImg.x; img.dataset.y = savedImg.y; img.dataset.scale = savedImg.scale;
+                                img.style.transform = `translate(${savedImg.x}px, ${savedImg.y}px) scale(${savedImg.scale})`;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function resetSemuaEditan() { 
+            if(confirm("Yakin mau menghapus SEMUA teks editan, gambar, dan ukuran slide dari Database?")) { 
+                db.ref().remove().then(() => location.reload()); 
+            } 
+        }
+
+        // LOAD SEMUA DATA DARI FIREBASE SAAT HALAMAN DIBUKA
+        window.onload = () => { 
+            loadSettings(); 
+            loadTextEdits(); 
+            loadBoxState(); 
+            loadImagesState();
+            showSlide(currentSlideIndex); 
+        };
+
+        // --- 3. FITUR EDIT TEKS RICH TEXT ---
+        let isEditMode = false; let clickCount = 0; let clickTimer; let activeTextEl = null; let currentFontSizeEm = 1.0; 
+        let isMenuVisible = false;
+
+        document.getElementById('secret-trigger').addEventListener('click', () => {
+            clickCount++; clearTimeout(clickTimer); clickTimer = setTimeout(() => { clickCount = 0; }, 600); 
+            if (clickCount === 3) {
+                isMenuVisible = !isMenuVisible;
+                document.querySelectorAll('.secret-btn').forEach(btn => btn.style.display = isMenuVisible ? 'flex' : 'none');
+                clickCount = 0;
+            }
+        });
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('btn-edit'); const svgEdit = document.getElementById('svg-edit'); const svgSave = document.getElementById('svg-save');
+            const toolbar = document.getElementById('inline-edit-toolbar'); const editableEls = document.querySelectorAll('.editable-target');
+            
+            if (isEditMode) {
+                document.body.classList.add('is-editing'); btn.classList.add('editing');
+                svgEdit.style.display = 'none'; svgSave.style.display = 'block'; toolbar.style.display = 'flex';
+                editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+            } else {
+                document.body.classList.remove('is-editing'); btn.classList.remove('editing');
+                svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null;
+                editableEls.forEach(el => el.setAttribute('contenteditable', 'false'));
+                saveTextEdits();
+            }
+        }
+
+        document.querySelectorAll('.editable-target').forEach(el => {
+            el.addEventListener('focus', function() {
+                if(isEditMode) {
+                    activeTextEl = this;
+                    let currentSizeStr = window.getComputedStyle(this).fontSize;
+                    currentFontSizeEm = parseFloat(currentSizeStr) / 16;
+                    document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1);
+                }
+            });
+        });
+
+        function formatText(cmd, val = null) { document.execCommand(cmd, false, val); if(activeTextEl) activeTextEl.focus(); }
+
+        function changeActiveFontSize(step) {
+            if(!activeTextEl) return;
+            currentFontSizeEm += step;
+            if(currentFontSizeEm < 0.5) currentFontSizeEm = 0.5; if(currentFontSizeEm > 10.0) currentFontSizeEm = 10.0; 
+            activeTextEl.style.fontSize = currentFontSizeEm.toFixed(1) + 'em';
+            document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1);
+        }
+
+        // --- 4. VOICE COMMAND ---
+        let recognition; let isVoiceActive = false; let lastProcessedIndex = 0;
+        const micDot = document.getElementById('mic-dot');
+        const modalCekSound = document.getElementById('mic-test-modal');
+        const liveTranscript = document.getElementById('live-transcript');
+        
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true; 
+            recognition.interimResults = true; 
+            recognition.lang = 'id-ID';
+
+            recognition.onstart = function() { lastProcessedIndex = 0; };
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = lastProcessedIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) { finalTranscript += event.results[i][0].transcript; } 
+                    else { interimTranscript += event.results[i][0].transcript; }
+                }
+
+                let fullTranscript = (finalTranscript + interimTranscript).toLowerCase().trim();
+                
+                if(modalCekSound.style.display === 'block') { liveTranscript.innerText = fullTranscript || "...mendengarkan..."; }
+
+                const isTriggered = fullTranscript.includes("kosong satu") || fullTranscript.includes("01") || fullTranscript.includes("kosong 1") || fullTranscript.includes("nol satu") || fullTranscript.includes("o1");
+
+                if(isTriggered) {
+                    let isCommandExecuted = false;
+
+                    if (fullTranscript.includes("next") || fullTranscript.includes("lanjut") || fullTranscript.includes("berikutnya")) { changeSlide(1); isCommandExecuted = true; } 
+                    else if (fullTranscript.includes("kembali") || fullTranscript.includes("previous") || fullTranscript.includes("sebelumnya") || fullTranscript.includes("back")) { changeSlide(-1); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("off") || fullTranscript.endsWith(" of") || fullTranscript.includes(" of ") || fullTranscript.includes("mati") || fullTranscript.includes("tutup") || fullTranscript.includes("gelap")) { document.getElementById("blackout-screen").style.display = "block"; isCommandExecuted = true; }
+                    else if (fullTranscript.includes("on") || fullTranscript.includes("nyala") || fullTranscript.includes("buka") || fullTranscript.includes("terang")) { document.getElementById("blackout-screen").style.display = "none"; isCommandExecuted = true; }
+                    
+                    else if (fullTranscript.includes("latar belakang") || fullTranscript.includes("pendahuluan")) { goToSlideName("latar belakang"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("permasalahan") || fullTranscript.includes("masalah")) { goToSlideName("permasalahan"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("solusi") || fullTranscript.includes("perancangan")) { goToSlideName("solusi perancangan"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("identifikasi")) { goToSlideName("identifikasi masalah"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("batasan")) { goToSlideName("batasan masalah"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("rumusan") || fullTranscript.includes("tujuan")) { goToSlideName("rumusan masalah"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("kajian praksis") || fullTranscript.includes("data verbal")) { goToSlideName("kajian praksis"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("karya relevan") || fullTranscript.includes("pustaka")) { goToSlideName("karya relevan"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("metode")) { goToSlideName("metode perancangan"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("analisis data") || fullTranscript.includes("5w") || fullTranscript.includes("5 w")) { goToSlideName("analisis data"); isCommandExecuted = true; }
+                    else if (fullTranscript.includes("penutup") || fullTranscript.includes("terima kasih")) { goToSlideName("penutup"); isCommandExecuted = true; }
+
+                    if(isCommandExecuted) {
+                        console.log("✅ Dieksekusi: " + fullTranscript);
+                        lastProcessedIndex = event.results.length; 
+                    }
+                }
+            };
+            
+            recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerText = "Error: " + e.error; };
+            recognition.onend = function() { if(isVoiceActive) recognition.start(); };
+        }
+
+        function triggerMicCheck() {
+            if(!recognition) { alert("Browser tidak support Web Speech API."); return; }
+            if(isVoiceActive) {
+                isVoiceActive = false; recognition.stop();
+                micDot.classList.remove('dot-red'); micDot.classList.add('dot-green');
+            } else {
+                modalCekSound.style.display = 'block'; liveTranscript.innerText = "Menunggu suara Anda...";
+                try { recognition.start(); isVoiceActive = true; micDot.classList.remove('dot-green'); micDot.classList.add('dot-red'); } catch(e) { console.log("Recognition running."); }
+            }
+        }
+
+        function startRealVoice() { modalCekSound.style.display = 'none'; }
+        function closeMicModal() { modalCekSound.style.display = 'none'; isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); }
+
+        // --- 5. LOGIKA GANTI SLIDE ---
+        let currentSlideIndex = 0; const slides = document.querySelectorAll('.slide');
+        const pageNum = document.getElementById('page-num'); const prevBtn = document.getElementById('prevBtn'); const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progress-bar');
+
+        function showSlide(index) {
+            slides.forEach(slide => { slide.classList.remove('active', 'is-focusing'); slide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); });
+            slides[index].classList.add('active'); pageNum.innerText = `${index + 1} / 12`; 
+            prevBtn.disabled = index === 0; nextBtn.disabled = index === slides.length - 1;
+            progressBar.style.width = `${((index) / (slides.length - 1)) * 100}%`;
+            if (index === 2) {
+                document.getElementById("count1").innerHTML = "0"; document.getElementById("count2").innerHTML = "0";
+                setTimeout(() => { animateValue("count1", 0, 35, 1200, false); animateValue("count2", 0, 95.7, 1500, true); }, 400);
+            }
+        }
+        function changeSlide(step) { let newIndex = currentSlideIndex + step; if (newIndex >= 0 && newIndex < slides.length) { currentSlideIndex = newIndex; showSlide(currentSlideIndex); } }
+        function goToSlideName(name) { for(let i=0; i<slides.length; i++) { if(slides[i].dataset.name === name) { currentSlideIndex = i; showSlide(i); break; } } }
+        function animateValue(id, start, end, duration, isFloat) {
+            let obj = document.getElementById(id); if (!obj) return; let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                let currentVal = start + (progress * (2 - progress)) * (end - start);
+                obj.innerHTML = isFloat ? currentVal.toFixed(1) : Math.floor(currentVal);
+                if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = end; 
+            }; window.requestAnimationFrame(step);
+        }
+
+        // --- 6. CAROUSEL KAJIAN PRAKSIS ---
+        function goToInnerSlide(index) {
+            const track = document.getElementById('kp-track'); const dots = document.querySelectorAll('.inner-dot');
+            track.style.transform = `translateX(-${index * 25}%)`;
+            dots.forEach(dot => dot.classList.remove('active')); dots[index].classList.add('active');
+        }
+
+        // --- 7. DRAG & RESIZE KOTAK & GAMBAR ---
+        let isDraggingEl = false, startX, startY, currentEl = null;
+
+        function previewImg(event, boxId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgTemp = new Image();
+                    imgTemp.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = imgTemp.width; let height = imgTemp.height;
+                        if (width > 1200) { height *= 1200 / width; width = 1200; }
+                        canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(imgTemp, 0, 0, width, height);
+                        applyImageToBox(canvas.toDataURL('image/jpeg', 0.8), boxId);
+                    }; imgTemp.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function applyImageToBox(src, boxId) {
+            const box = document.getElementById(boxId); box.classList.add('has-image'); box.querySelector('.placeholder-content').style.display = 'none';
+            let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); }
+            img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`;
+            saveImageState(boxId, img); // SIMPAN KE FIREBASE
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if(e.target.classList.contains('draggable-img') && !isEditMode) { isDraggingEl = true; currentEl = e.target; } 
+            else if(e.target.classList.contains('drag-handle-card')) { isDraggingEl = true; currentEl = e.target.closest('.draggable-box'); currentEl.classList.add('is-dragging'); } 
+            else { return; }
+            startX = e.clientX; startY = e.clientY; e.preventDefault(); 
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if(!isDraggingEl || !currentEl) return;
+            const dx = e.clientX - startX; const dy = e.clientY - startY;
+            let x = parseFloat(currentEl.dataset.x || 0) + dx; let y = parseFloat(currentEl.dataset.y || 0) + dy;
+            
+            if(currentEl.classList.contains('draggable-img')) { let scale = parseFloat(currentEl.dataset.scale || 1); currentEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; } 
+            else { currentEl.style.transform = `translate(${x}px, ${y}px)`; }
+            currentEl.dataset.x = x; currentEl.dataset.y = y; startX = e.clientX; startY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => { 
+            if(isDraggingEl && currentEl) {
+                if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); saveBoxState(currentEl); }
+                else if(currentEl.classList.contains('draggable-img')) { saveImageState(currentEl.parentElement.id, currentEl); }
+            }
+            isDraggingEl = false; currentEl = null; 
+        });
+
+        document.querySelectorAll('.draggable-box').forEach(box => { box.addEventListener('mouseup', () => { if(isEditMode) saveBoxState(box); }); });
+        document.querySelectorAll('.img-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('wheel', (e) => {
+                let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); 
+                let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); 
+                img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0);
+                img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+                
+                clearTimeout(wrapper.zoomTimer);
+                wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300);
+            }, {passive: false});
+        });
+
+        // Focus Mode Click
+        document.querySelectorAll('.focusable').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide');
+                if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } 
+                else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); }
+            });
+        });
+        document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); }); });
+        document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); });
+    </script>
+</body>
+</html>
