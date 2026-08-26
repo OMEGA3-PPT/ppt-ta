@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Presentasi Proposal TA - Ahmad Yamil</title>
+    <title>Presentasi Proposal TA - Ahmad Yamil (ONLINE V2)</title>
     <!-- FIREBASE SDK (WAJIB ADA BUAT ONLINE) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -49,14 +49,12 @@
         @keyframes blinkSlow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } }
         @keyframes blinkFast { 0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.5; transform: scale(0.8); } }
 
-        /* --- MIC TEST MODAL (REVISED UI) --- */
+        /* --- MIC TEST MODAL --- */
         #mic-test-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 480px; max-width: 90vw; background: rgba(255,255,255,0.98); backdrop-filter: blur(15px); border-radius: 16px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 10000; text-align: center; border: 2px solid #3b82f6; }
         .voice-instruction { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; font-size: 0.9em; max-height: 250px; overflow-y: auto; }
         .voice-instruction ul { margin-left: 20px; color: #334155; line-height: 1.5; margin-bottom: 12px; }
         .voice-instruction p { margin-bottom: 5px; color: #1e3a8a; }
-        .voice-instruction::-webkit-scrollbar { width: 6px; }
-        .voice-instruction::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: 0.3s; }
+        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1em; transition: 0.2s; }
         .btn-primary:hover { background: #2563eb; }
         .btn-close { background: transparent; color: #64748b; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; width: 100%; padding: 5px; }
@@ -65,12 +63,14 @@
         #settings-modal { display: none; position: fixed; top: 85px; right: 25px; width: 300px; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-radius: 16px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); z-index: 10000; border: 1px solid rgba(255,255,255,0.6); }
         .setting-group { margin-bottom: 20px; }
         .setting-group label { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9em; color: #475569; margin-bottom: 5px; }
+        
         #inline-edit-toolbar { display: none; position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 15px; border-radius: 8px; z-index: 10001; gap: 8px; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 1px solid #475569; }
-        .format-btn { background: transparent; color: white; border: 1px solid transparent; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .format-btn { background: transparent; color: white; border: 1px solid transparent; width: 32px; height: 32px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-size: 1rem;}
         .format-btn:hover { background: #334155; border-color: #64748b; }
         .divider { width: 1px; height: 24px; background: #475569; margin: 0 5px; }
-        #active-font-val { font-weight: 900; color: #3b82f6; min-width: 35px; text-align: center; }
-        .is-editing .editable-target { outline: 2px dashed #3b82f6; outline-offset: 4px; background: rgba(59,130,246,0.02); border-radius: 8px; padding: 5px; transition: 0.2s; cursor: text; min-height: 50px; }
+        #active-font-val { font-weight: 900; color: #3b82f6; min-width: 35px; text-align: center; font-size: 1rem;}
+        
+        .is-editing .editable-target { outline: 2px dashed #3b82f6; outline-offset: 4px; background: rgba(59,130,246,0.02); border-radius: 8px; padding: 5px; transition: 0.2s; cursor: text; min-height: 25px; }
         .is-editing .editable-target:focus { outline: 2px solid #3b82f6; background: rgba(59,130,246,0.08); }
 
         /* --- SLIDE CSS & ANIMATIONS --- */
@@ -79,7 +79,7 @@
         .slide.active { opacity: 1; visibility: visible; z-index: 10; transform: translate(-50%, -50%) translateX(0) scale(1); }
         .slide::-webkit-scrollbar { width: 8px; } .slide::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        .slide-content-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; gap: 20px; }
+        .slide-content-wrapper { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; gap: 15px; }
         .content-slide { overflow: hidden; }
         .content-slide::before { content: ''; position: absolute; width: 600px; height: 600px; background: #3b82f6; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; top: -150px; right: -150px; opacity: 0.03; animation: morphLiquid 15s ease-in-out infinite alternate; pointer-events: none; z-index: 0; }
         .content-slide::after { content: ''; position: absolute; width: 700px; height: 700px; background: #ea580c; border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; bottom: -200px; left: -200px; opacity: 0.02; animation: morphLiquid 18s ease-in-out infinite alternate-reverse; pointer-events: none; z-index: 0; }
@@ -90,9 +90,17 @@
         h1 { font-size: 2.8em; color: #1e3a8a; line-height: 1.2; font-weight: 900; text-transform: uppercase; }
         h2 { font-size: 2.1em; color: #2563eb; font-weight: 800; }
         h3.section-title { color: #1e3a8a; margin-bottom: 15px; font-size: 1.4em; border-left: 4px solid #ea580c; padding-left: 12px; }
-        p, li { font-size: 1.2em; line-height: 1.6; color: #334155; margin-bottom: 15px; }
-        ul, ol { margin-left: 28px; margin-bottom: 25px; }
-        .drop-cap::first-letter { font-size: 2.5em; float: left; line-height: 0.8; padding-right: 10px; padding-top: 4px; color: #1e3a8a; font-weight: 900; }
+        p, li { font-size: 1.15em; line-height: 1.6; color: #334155; margin-bottom: 12px; }
+        
+        /* SISTEM LIST DINAMIS BERSARANG */
+        ul, ol { margin-left: 28px; margin-bottom: 15px; }
+        .editable-target ul { list-style-type: disc; } 
+        .editable-target ul ul { list-style-type: circle; margin-bottom: 5px; margin-top: 5px; } 
+        .editable-target ul ul ul { list-style-type: square; }
+        
+        .editable-target ol { list-style-type: upper-alpha; } 
+        .editable-target ol ol { list-style-type: lower-alpha; margin-bottom: 5px; margin-top: 5px; } 
+        .editable-target ol ol ol { list-style-type: lower-roman; } 
 
         .content-split { display: flex; gap: 40px; flex: 1; align-items: center; position: relative; z-index: 2; width: 100%; }
         .text-col { flex: 2; display: flex; flex-direction: column; justify-content: center; }
@@ -110,11 +118,12 @@
         body:not(.is-editing) .slide.is-focusing .focusable:not(.focused) { opacity: 0.25; filter: grayscale(100%); }
         body:not(.is-editing) .focusable.focused { transform: scale(1.02); background: #fffbeb; color: #b45309; box-shadow: -4px 0 0 #ea580c; }
 
-        .draggable-box { position: relative; resize: both; overflow: auto; transform: translate(0px, 0px); min-width: 250px; min-height: 150px; transition: box-shadow 0.2s; }
+        .draggable-box { position: relative; resize: both; overflow: auto; transform: translate(0px, 0px); min-width: 200px; min-height: 120px; transition: box-shadow 0.2s; }
         .drag-handle-card { position: absolute; top: 10px; right: 10px; cursor: move; display: none; background: #ea580c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8em; z-index: 100; font-weight: bold; }
         .is-editing .drag-handle-card { display: block; }
         .is-dragging { transition: none !important; opacity: 0.9; }
 
+        /* Visual Elements */
         .voice-equalizer { display: flex; gap: 12px; align-items: flex-end; height: 160px; }
         .voice-bar { width: 20px; border-radius: 20px; background: linear-gradient(180deg, #3b82f6, #ea580c); animation: equalize 1.2s infinite alternate ease-in-out; }
         .voice-bar:nth-child(1) { height: 40px; animation-delay: 0.1s; } .voice-bar:nth-child(2) { height: 100px; animation-delay: 0.4s; }
@@ -145,12 +154,8 @@
         .svg-target { width: 160px; height: 160px; animation: pulseFloat 4s infinite alternate ease-in-out; }
         @keyframes pulseFloat { 0% { transform: translateY(-5px) scale(0.98); } 100% { transform: translateY(5px) scale(1.02); } }
 
-        .quote-box { border-left: 6px solid #ea580c; background: linear-gradient(90deg, rgba(59,130,246,0.08), transparent); padding: 25px 30px; border-radius: 0 12px 12px 0; margin-bottom: 20px; width: 100%; }
+        .quote-box { border-left: 6px solid #ea580c; background: linear-gradient(90deg, rgba(59,130,246,0.08), transparent); padding: 20px 25px; border-radius: 0 12px 12px 0; margin-bottom: 20px; width: 100%; }
         .quote-box em { font-size: 1.15em; font-weight: 600; color: #1e3a8a; line-height: 1.5; display: block; }
-
-        .grid-2x2-large { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 25px; width: 100%; flex: 1; }
-        .grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; width: 100%; flex: 1; }
-        .grid-card { background: rgba(255,255,255,0.7); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; border-left: 6px solid #3b82f6; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.02); position: relative; z-index: 2; width: 100%; }
 
         .data-container { display: flex; gap: 40px; margin-top: 20px; width: 100%; position: relative; z-index: 2; }
         .data-card { flex: 1; background: rgba(255,255,255,0.8); padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;}
@@ -170,17 +175,31 @@
         .trend-number { font-size: 3.5em; font-weight: 800; color: #dc2626; }
 
         .img-grid { display: flex; gap: 20px; flex: 1; width: 100%; position: relative; z-index: 2; margin-bottom: 10px; }
-        .img-wrapper { flex: 1; position: relative; border-radius: 16px; overflow: hidden; border: 3px dashed #cbd5e1; background-color: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; transition: 0.2s; min-height: 250px; }
+        .img-wrapper { flex: 1; position: relative; border-radius: 16px; overflow: hidden; border: 3px dashed #cbd5e1; background-color: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; transition: 0.2s; min-height: 220px; }
         .placeholder-content { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600; text-align: center; cursor: pointer; width: 100%; height: 100%; z-index: 2; font-size: 0.9em; padding: 10px; }
         .draggable-img { position: absolute; cursor: grab; transform-origin: center; display: none; max-width: 100%; max-height: 100%; object-fit: contain; }
 
+        /* GRID KARYA RELEVAN */
+        .grid-karya-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; margin-bottom: 15px; flex: 1;}
+        .karya-item-box { background: rgba(255,255,255,0.85); border: 1px solid #e2e8f0; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
+        .karya-img-box { width: 100%; height: 140px; border-radius: 10px; border: 2px dashed #cbd5e1; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+        .box-diferensiasi { background: #eff6ff; border-left: 6px solid #3b82f6; border-radius: 0 12px 12px 0; padding: 15px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
+
+        /* GRID METODE 2 KOLOM */
+        .grid-2x2-large { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; width: 100%; height: 100%; }
+        .grid-card { background: rgba(255,255,255,0.85); border: 1px solid #e2e8f0; border-radius: 16px; padding: 30px; border-top: 6px solid #3b82f6; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; z-index: 2; width: 100%; }
+
+        /* GRID 5W1H (6 KOTAK) */
+        .grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; width: 100%; height: 100%; }
+
+        /* Cover & Closing */
         .title-slide-custom { padding: 0 !important; display: flex !important; flex-direction: row !important; align-items: stretch; border-top: none !important; }
         .title-left-decor { width: 38%; position: relative; background-color: #ffffff; background-image: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 25px 25px; overflow: hidden; border-right: 1px solid #e2e8f0; animation: panDots 20s linear infinite; z-index: 1; }
         .shape-blue { position: absolute; width: 600px; height: 600px; background: #3b82f6; top: -200px; left: -250px; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; animation: morphLiquid 8s ease-in-out infinite alternate; z-index: 2; }
         .shape-orange { position: absolute; width: 450px; height: 450px; background: #ea580c; bottom: -150px; right: -200px; border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; animation: morphLiquid 10s ease-in-out infinite alternate-reverse; z-index: 2; }
-        .title-right-content { width: 62%; padding: 60px 80px; display: flex; flex-direction: column; justify-content: center; background: #ffffff; position: relative; z-index: 3; }
-        .badge-dark { background: #1e293b; color: #ffffff; padding: 8px 22px; border-radius: 30px; font-size: 0.85em; font-weight: 800; letter-spacing: 2px; margin-bottom: 30px; align-self: flex-start; cursor: pointer; }
-        .info-grid { display: flex; gap: 40px; border-top: 2px solid #f1f5f9; padding-top: 35px; margin-top: 35px;}
+        .title-right-content { width: 62%; padding: 50px 70px; display: flex; flex-direction: column; justify-content: center; background: #ffffff; position: relative; z-index: 3; }
+        .badge-dark { background: #1e293b; color: #ffffff; padding: 8px 22px; border-radius: 30px; font-size: 0.85em; font-weight: 800; letter-spacing: 2px; margin-bottom: 25px; align-self: flex-start; cursor: pointer; }
+        .info-grid { display: flex; gap: 40px; border-top: 2px solid #f1f5f9; padding-top: 25px; margin-top: 25px;}
 
         .closing-slide { display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; text-align: center; border-top: none !important; background: #0f172a !important; padding: 0 !important; }
         .closing-text-wrapper { opacity: 0; transform: scale(0.5) translateY(20px); }
@@ -209,11 +228,10 @@
     <div class="top-controls">
         <div class="mic-dot-container" onclick="triggerMicCheck()" title="Voice Command"><div id="mic-dot" class="mic-dot dot-green"></div></div>
         <button id="btn-settings" class="icon-btn secret-btn" onclick="toggleSettingsPanel()" title="Pengaturan Ukuran"><svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></button>
-        <button id="btn-reset" class="icon-btn secret-btn" onclick="resetSemuaEditan()" title="Reset Semua Data"><svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg></button>
         <button id="btn-edit" class="icon-btn secret-btn" onclick="toggleEditMode()" title="Mode Edit Teks"><svg id="svg-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><svg id="svg-save" viewBox="0 0 24 24" style="display:none;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg></button>
     </div>
 
-    <!-- UI MODAL CEK SOUND TERBARU (SUDAH DIUBAH KE "MONITOR") -->
+    <!-- UI MODAL CEK SOUND -->
     <div id="mic-test-modal">
         <h3 style="color: #1e3a8a; margin-bottom: 5px;">Cek Sound Voice Command</h3>
         <p style="font-size: 0.85em; color: #475569; margin-bottom: 10px;">Bicara ke mic. Berikut daftar perintah khusus Anda:</p>
@@ -221,8 +239,8 @@
         <div class="voice-instruction">
             <p><b>1. Kontrol Layar (Fokus):</b></p>
             <ul>
-                <li>"Matikan monitor"</li>
-                <li>"Nyalakan monitor" / "Hidupkan monitor"</li>
+                <li>"Layar mati" / "Layar off"</li>
+                <li>"Layar hidup" / "Layar on" / "Layar nyala"</li>
             </ul>
             <p><b>2. Navigasi Dasar:</b></p>
             <ul>
@@ -231,7 +249,7 @@
             </ul>
             <p><b>3. Lompat Halaman Spesifik:</b></p>
             <ul>
-                <li>"Tampilkan halaman satu" (Bisa sampai <i>halaman dua belas</i>)</li>
+                <li>"Tampilkan halaman satu" (Sampai <i>halaman dua belas</i>)</li>
                 <li>"Tampilkan latar belakang", "Tampilkan permasalahan", "Tampilkan solusi", "Tampilkan identifikasi masalah", "Tampilkan batasan masalah", "Tampilkan rumusan masalah", "Tampilkan kajian praksis", "Tampilkan karya relevan", "Tampilkan metode", "Tampilkan analisis data", "Tampilkan penutup"</li>
             </ul>
         </div>
@@ -250,16 +268,23 @@
         <button class="format-btn" onclick="formatText('justifyLeft')" title="Rata Kiri">↤</button>
         <button class="format-btn" onclick="formatText('justifyCenter')" title="Rata Tengah">↔</button>
         <button class="format-btn" onclick="formatText('justifyRight')" title="Rata Kanan">↦</button>
-        <button class="format-btn" onclick="formatText('justifyFull')" title="Rata Penuh (Justify)">≡</button>
+        <button class="format-btn" onclick="formatText('justifyFull')" title="Rata Penuh">≡</button>
+        <div class="divider"></div>
+        <!-- FITUR LIST BARU -->
+        <button class="format-btn" onclick="formatText('insertUnorderedList')" title="List Bulat (Bullet)">●</button>
+        <button class="format-btn" onclick="formatText('insertOrderedList')" title="List Angka/Huruf">A.</button>
+        <button class="format-btn" onclick="formatText('outdent')" title="Kurangi Indent (Geser Kiri)">⇤</button>
+        <button class="format-btn" onclick="formatText('indent')" title="Tambah Indent (Bikin Sub-list)">⇥</button>
         <div class="divider"></div>
         <button class="format-btn" onclick="changeActiveFontSize(-0.1)">-</button>
         <span id="active-font-val">1.0</span>
         <button class="format-btn" onclick="changeActiveFontSize(0.1)">+</button>
     </div>
+    
     <div id="settings-modal">
         <h3 style="color:#1e3a8a; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Pengaturan Bingkai</h3>
-        <div class="setting-group"><label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label><input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
-        <div class="setting-group"><label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label><input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
+        <div class="setting-group"><label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label><input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()"></div>
+        <div class="setting-group"><label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label><input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()"></div>
         <button onclick="toggleSettingsPanel()" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tutup</button>
     </div>
 
@@ -286,7 +311,14 @@
             <div class="slide-header"><div class="editable-target" id="txt-canvas-4"><h2>Latar Belakang</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
                 <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-5"><p class="drop-cap">Ekosistem konten digital di Indonesia tumbuh sangat pesat. Berdasarkan laporan, terdapat lebih dari 3.000 kanal YouTube di Indonesia yang mencapai lebih dari satu juta subscriber, angka tertinggi di Asia Tenggara yang memicu persaingan sangat ketat.</p><p>Di tengah ekosistem tersebut, <strong>TH Group Channel</strong> hadir sebagai kanal ulasan animasi yang konsisten memproduksi konten sejak tahun 2016 secara lintas platform (YouTube, TikTok, dan Instagram).</p><p>Kanal ini rutin mengunggah berbagai format konten dan berhasil mengumpulkan basis audiens yang besar. Untuk dapat terus bertahan dan berkembang di ceruk yang jenuh, kanal dituntut untuk memiliki ciri khas kuat agar mudah dikenali oleh audiensnya.</p></div>
+                    <div class="text-col editable-target focusable" id="txt-canvas-5">
+                        <ul>
+                            <li><strong>Profil:</strong> TH Group Channel adalah kanal YouTube ulasan animasi (berdiri sejak 2016) dengan lebih dari 761 ribu subscriber.</li>
+                            <li><strong>Operasional:</strong> Aktif memproduksi konten lintas platform (YouTube, TikTok, Instagram) yang digerakkan oleh 5 pengisi suara utama.</li>
+                            <li><strong>Kondisi Lingkungan:</strong> Ekosistem YouTube sangat jenuh; terdapat lebih dari 3.000 kanal besar di Indonesia yang memicu persaingan konten yang ketat.</li>
+                            <li><strong>Tuntutan:</strong> Kanal dituntut memiliki diferensiasi visual yang kuat agar dapat terus bertahan dan mudah dikenali oleh audiens.</li>
+                        </ul>
+                    </div>
                     <div class="visual-col"><div class="voice-equalizer"><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div></div></div>
                 </div>
             </div>
@@ -296,10 +328,17 @@
         <div class="slide content-slide" data-name="permasalahan">
             <div class="slide-header"><div class="editable-target" id="txt-canvas-6"><h2>Permasalahan</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
-                <div class="editable-target focusable" id="txt-canvas-7"><p>Pemilik kanal telah mencoba berbagai cara untuk tampil beda (mengubah gaya <i>thumbnail</i>, cara <i>editing</i>, hingga topik bahasan). Namun, inovasi tersebut sangat mudah ditiru oleh kompetitor. Ketiadaan diferensiasi visual yang solid berdampak langsung pada performa:</p></div>
+                <div class="editable-target focusable" id="txt-canvas-7">
+                    <ul>
+                        <li><strong>Inovasi Mudah Ditiru:</strong> Eksperimen gaya visual (thumbnail & editing) sangat mudah ditiru oleh kompetitor.</li>
+                        <li><strong>Krisis Loyalitas:</strong> Pertumbuhan subscriber menurun hingga <strong>35%</strong>, dan <strong>95,7%</strong> total waktu tonton berasal dari penonton yang tidak berlangganan.</li>
+                        <li><strong>Ketiadaan Representasi:</strong> 5 pengisi suara utama di dalam kanal tidak memiliki wujud karakter visual masing-masing.</li>
+                        <li><strong>Dampak Emosional:</strong> Audiens kesulitan membangun ikatan emosional (hubungan parasosial) yang loyal karena tidak adanya wajah tetap kanal.</li>
+                    </ul>
+                </div>
                 <div class="data-container focusable">
-                    <div class="data-card draggable-box" id="box-data-1"><div class="drag-handle-card">✥ Geser</div><div class="trend-chart"><span class="trend-arrow">⬇</span><div class="trend-number"><span id="count1">0</span>%</div></div><div class="editable-target" id="txt-canvas-8"><p>Pertumbuhan subscriber <strong>mengalami penurunan 35%</strong> dibandingkan periode 365 hari sebelumnya.</p></div></div>
-                    <div class="data-card draggable-box" id="box-data-2"><div class="drag-handle-card">✥ Geser</div><div class="svg-chart"><svg viewBox="0 0 100 100"><circle class="donut-bg" cx="50" cy="50" r="45"></circle><circle class="donut-fill" cx="50" cy="50" r="45"></circle></svg><div class="donut-text"><span id="count2">0</span>%</div></div><div class="editable-target" id="txt-canvas-9"><p>Sebesar <strong>95,7%</strong> total waktu tonton berasal dari penonton yang <strong>belum berlangganan</strong> (unsubscribed).</p></div></div>
+                    <div class="data-card draggable-box" id="box-data-1"><div class="drag-handle-card">✥ Geser</div><div class="trend-chart"><span class="trend-arrow">⬇</span><div class="trend-number"><span id="count1">0</span>%</div></div><div class="editable-target" id="txt-canvas-8"><p>Pertumbuhan subscriber <strong>turun 35%</strong> dari periode sebelumnya.</p></div></div>
+                    <div class="data-card draggable-box" id="box-data-2"><div class="drag-handle-card">✥ Geser</div><div class="svg-chart"><svg viewBox="0 0 100 100"><circle class="donut-bg" cx="50" cy="50" r="45"></circle><circle class="donut-fill" cx="50" cy="50" r="45"></circle></svg><div class="donut-text"><span id="count2">0</span>%</div></div><div class="editable-target" id="txt-canvas-9"><p>Sebesar <strong>95,7%</strong> penonton berstatus <strong>unsubscribed</strong>.</p></div></div>
                 </div>
             </div>
         </div>
@@ -309,7 +348,14 @@
             <div class="slide-header"><div class="editable-target" id="txt-canvas-10"><h2>Solusi Perancangan</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
                 <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-11"><p>Ketiadaan representasi visual bagi kelima pengisi suara dan kanal itu sendiri tidak dapat dijawab hanya dengan logo, karena logo bersifat statis dan tunggal.</p><p>Solusi utamanya adalah merancang <span style="color: #ea580c; font-weight: bold;">Karakter Maskot 3D sebagai Aset Visual Orisinal</span>:</p><ul><li><strong>Aset Visual Pembeda:</strong> Desain maskot orisinal jauh lebih sulit ditiru oleh kompetitor dibandingkan sekadar mengubah gaya <i>editing</i> atau <i>thumbnail</i>.</li><li><strong>Representasi Individu:</strong> 5 varian karakter (dibedakan via warna & aksesori) untuk memberi wujud visual pada tiap pengisi suara.</li><li><strong>Wajah Sentral Kanal:</strong> Menjadi figur utama lintas platform (YouTube, TikTok, IG) untuk membangun ikatan emosional dengan audiens.</li></ul></div>
+                    <div class="text-col editable-target focusable" id="txt-canvas-11">
+                        <div class="quote-box" style="margin-bottom: 20px;"><em>Solusi perancangan ini adalah menciptakan Karakter Maskot 3D sebagai Aset Visual Pembeda:</em></div>
+                        <ul>
+                            <li><strong>Representasi Individu:</strong> 5 varian maskot (dibedakan melalui warna & aksesori) untuk memberi wujud visual pada tiap pengisi suara.</li>
+                            <li><strong>Efisiensi Produksi Konten:</strong> Format 3D memberikan fleksibilitas tinggi dalam memproduksi berbagai variasi pose dan mimik wajah secara cepat.</li>
+                            <li><strong>Wajah Sentral Kanal:</strong> Menjadi figur utama lintas platform (YouTube, TikTok, IG) untuk membangun ikatan emosional (parasosial) dengan audiens.</li>
+                        </ul>
+                    </div>
                     <div class="visual-col"><div class="wireframe-cube"><div class="face face-front"></div><div class="face face-back"></div><div class="face face-left"></div><div class="face face-right"></div><div class="face face-top"></div><div class="face face-bottom"></div></div></div>
                 </div>
             </div>
@@ -320,7 +366,13 @@
             <div class="slide-header"><div class="editable-target" id="txt-canvas-12"><h2>Identifikasi Masalah</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
                 <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-13"><ol><li style="margin-bottom: 25px;">Tingginya tingkat persaingan di segmen ulasan animasi, di mana kompetitor dengan mudah meniru gaya konten (<i>thumbnail</i> dan <i>editing</i>) milik TH Group Channel.</li><li style="margin-bottom: 25px;">Kanal mengalami perlambatan pertumbuhan dan kesulitan mengkonversi penonton kasual menjadi penonton loyal yang menetap.</li><li>Kelima pengisi suara kanal tidak memiliki representasi karakter visual sama sekali, sehingga audiens tidak memiliki figur untuk membangun ikatan emosional (hubungan parasosial).</li></ol></div>
+                    <div class="text-col editable-target focusable" id="txt-canvas-13">
+                        <ol>
+                            <li><strong>Persaingan & Rentan Plagiasi:</strong> Tingginya persaingan di segmen ulasan animasi, di mana inovasi gaya konten (thumbnail & editing) sangat mudah ditiru kompetitor.</li>
+                            <li><strong>Hambatan Konversi Audiens:</strong> Terjadinya perlambatan pertumbuhan kanal karena sulitnya mengkonversi penonton kasual menjadi penonton tetap yang loyal.</li>
+                            <li><strong>Keterbatasan Visual Persona:</strong> Representasi kelima pengisi suara saat ini hanya sebatas <em>tag name</em> (teks), yang sifatnya statis dan tidak mampu memvisualisasikan keunikan karakter masing-masing secara maksimal.</li>
+                        </ol>
+                    </div>
                     <div class="visual-col"><div class="network-graphic"><div class="line line-1"></div><div class="line line-2"></div><div class="line line-3"></div><div class="node node-1"></div><div class="node node-2"></div><div class="node node-3"></div></div></div>
                 </div>
             </div>
@@ -331,7 +383,14 @@
             <div class="slide-header"><div class="editable-target" id="txt-canvas-14"><h2>Batasan Masalah</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
                 <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-15"><ul><li style="margin-bottom: 25px;">Perancangan difokuskan murni pada penciptaan desain karakter maskot 3D sebagai aset visual pendukung kanal.</li><li style="margin-bottom: 25px;">Penciptaan spesifik pada 5 varian maskot dengan pembeda warna dan aksesori untuk merepresentasikan tiap pengisi suara.</li><li style="margin-bottom: 25px;">Hasil akhir berupa panduan visual dan turunan aset yang fungsional untuk YouTube, TikTok, dan Instagram.</li><li>Tanggung jawab perancangan terbatas pada penyediaan solusi visual. Keberhasilan konversi audiens dan eksekusi pemasaran ke depannya adalah wewenang penuh pemilik kanal.</li></ul></div>
+                    <div class="text-col editable-target focusable" id="txt-canvas-15">
+                        <ul>
+                            <li><strong>Fokus Objek:</strong> Perancangan difokuskan pada penciptaan 5 varian karakter maskot 3D sebagai aset visual pendukung konten digital TH Group Channel.</li>
+                            <li><strong>Batasan Visual:</strong> Diferensiasi kelima maskot dititikberatkan pada penyesuaian warna dan aksesori untuk merepresentasikan setiap pengisi suara.</li>
+                            <li><strong>Keluaran (Output):</strong> Hasil akhir berupa satu dokumen Panduan Visual (<em>Character Style Guide</em>) terpadu dan turunan aset digital yang fungsional untuk YouTube, TikTok, Instagram.</li>
+                            <li><strong>Batas Wewenang:</strong> Perancangan terbatas pada penyediaan solusi komunikasi visual. Eksekusi pemasaran, konversi audiens, dan pendaftaran hak cipta (HAKI) merupakan wewenang penuh pemilik kanal.</li>
+                        </ul>
+                    </div>
                     <div class="visual-col"><svg class="svg-target" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
                 </div>
             </div>
@@ -342,7 +401,15 @@
             <div class="slide-header"><div class="editable-target" id="txt-canvas-16"><h2>Rumusan & Tujuan Perancangan</h2></div><span class="tagline">PENDAHULUAN</span></div>
             <div class="slide-content-wrapper">
                 <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-17"><h3 class="section-title">Rumusan Masalah</h3><div class="quote-box"><em>"Bagaimana merancang desain karakter maskot TH Group Channel sebagai aset visual pendukung konten digital yang dapat merepresentasikan tiap pengisi suara serta menjadi wajah tetap kanal di hadapan audiens?"</em></div><h3 class="section-title" style="margin-top:20px;">Tujuan Perancangan</h3><ul><li>Merancang 5 varian karakter maskot yang secara fungsional merepresentasikan setiap pengisi suara dalam tim produksi.</li><li>Menghadirkan karakter maskot yang berkelanjutan (sustainable) untuk diterapkan di berbagai platform distribusi konten.</li></ul></div>
+                    <div class="text-col editable-target focusable" id="txt-canvas-17">
+                        <h3 class="section-title">Rumusan Masalah</h3>
+                        <div class="quote-box"><em>"Bagaimana merancang desain karakter maskot TH Group Channel sebagai aset visual pendukung konten digital yang dapat merepresentasikan tiap pengisi suara serta menjadi wajah tetap kanal di hadapan audiens?"</em></div>
+                        <h3 class="section-title" style="margin-top:20px;">Tujuan Perancangan</h3>
+                        <ul>
+                            <li>Merancang 5 varian karakter maskot yang secara fungsional merepresentasikan setiap pengisi suara dalam tim produksi.</li>
+                            <li>Menghadirkan karakter maskot yang berkelanjutan (<em>sustainable</em>) untuk diterapkan di berbagai platform distribusi konten.</li>
+                        </ul>
+                    </div>
                     <div class="visual-col"><div class="target-node"><div class="target-ring"></div><div class="target-ring"></div><div class="target-ring"></div></div></div>
                 </div>
             </div>
@@ -354,7 +421,7 @@
             <div class="slide-content-wrapper" style="justify-content: space-between;">
                 <div class="inner-carousel-container">
                     <div class="inner-carousel-track" id="kp-track">
-                        <div class="inner-carousel-slide"><div class="editable-target focusable" id="txt-canvas-19"><h3 class="section-title">Data Verbal: Analisis Entitas & Kompetitor</h3><p><strong>TH Group Channel:</strong> Kanal ulasan animasi yang berdiri sejak 2016, digerakkan oleh 5 pengisi suara utama secara bergantian.</p><p><strong>Kondisi Lapangan:</strong> Upaya diferensiasi melalui pengubahan gaya konten terbukti selalu berhasil ditiru. Ketiadaan wujud bagi kelima pengisi suara juga menghambat terbangunnya ikatan emosional (<i>parasosial</i>) penonton dengan kanal.</p><p><strong>Kanal Kompetitor:</strong> Terdapat tekanan dari kompetitor di segmen yang sama (seperti <i>Nas4rt Pedia, Note,</i> dan <i>Blitz Strike X</i>). Ketiganya secara kasat mata belum memiliki maskot orisinal sebagai identitas, menciptakan peluang strategis pembeda bagi TH Group Channel.</p></div></div>
+                        <div class="inner-carousel-slide"><div class="editable-target focusable" id="txt-canvas-19"><h3 class="section-title">Data Verbal (Analisis Entitas & Studi Pembanding)</h3><p><strong>Internal:</strong> TH Group Channel digerakkan oleh 5 pengisi suara utama secara bergantian.</p><p><strong>Kanal Sejenis:</strong> Kanal dengan segmen ulasan serupa (seperti <i>Nas4rt Pedia, Note,</i> dan <i>Blitz Strike X</i>) belum memiliki maskot orisinal sebagai identitas tetap.</p></div></div>
                         <div class="inner-carousel-slide"><div class="editable-target" id="txt-canvas-20"><h3 class="section-title">Data Visual: Identitas Internal Saat Ini</h3></div><input type="file" id="up-kp1" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp1')"><input type="file" id="up-kp2" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp2')"><div class="img-grid" style="gap: 40px;"><div class="img-wrapper" id="box-kp1" ondblclick="if(!isEditMode) document.getElementById('up-kp1').click()"><div class="placeholder-content"><span>📷</span><br>Double-Click<br>Upload Logo Kanal</div></div><div class="img-wrapper" id="box-kp2" ondblclick="if(!isEditMode) document.getElementById('up-kp2').click()"><div class="placeholder-content"><span>📷</span><br>Double-Click<br>Upload Tampilan Tag Name</div></div></div></div>
                         <div class="inner-carousel-slide"><div class="editable-target" id="txt-canvas-21"><h3 class="section-title">Data Visual: Visual Konten & Lintas Platform</h3></div><input type="file" id="up-kp3" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp3')"><input type="file" id="up-kp4" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp4')"><input type="file" id="up-kp5" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp5')"><div class="img-grid"><div class="img-wrapper" id="box-kp3" ondblclick="if(!isEditMode) document.getElementById('up-kp3').click()"><div class="placeholder-content"><span>📷</span><br>Upload Bukti Pakai Karakter Pinjaman</div></div><div class="img-wrapper" id="box-kp4" ondblclick="if(!isEditMode) document.getElementById('up-kp4').click()"><div class="placeholder-content"><span>📷</span><br>Upload Feed Instagram</div></div><div class="img-wrapper" id="box-kp5" ondblclick="if(!isEditMode) document.getElementById('up-kp5').click()"><div class="placeholder-content"><span>📷</span><br>Upload Feed TikTok</div></div></div></div>
                         <div class="inner-carousel-slide"><div class="editable-target" id="txt-canvas-22"><h3 class="section-title">Data Visual: Analisis Kompetitor Tanpa Maskot</h3></div><input type="file" id="up-kp6" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp6')"><input type="file" id="up-kp7" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp7')"><input type="file" id="up-kp8" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kp8')"><div class="img-grid"><div class="img-wrapper" id="box-kp6" ondblclick="if(!isEditMode) document.getElementById('up-kp6').click()"><div class="placeholder-content"><span>📷</span><br>Kompetitor 1<br>(Nas4rt Pedia)</div></div><div class="img-wrapper" id="box-kp7" ondblclick="if(!isEditMode) document.getElementById('up-kp7').click()"><div class="placeholder-content"><span>📷</span><br>Kompetitor 2<br>(Note)</div></div><div class="img-wrapper" id="box-kp8" ondblclick="if(!isEditMode) document.getElementById('up-kp8').click()"><div class="placeholder-content"><span>📷</span><br>Kompetitor 3<br>(Blitz Strike X)</div></div></div></div>
@@ -368,37 +435,131 @@
         <div class="slide content-slide" data-name="karya relevan">
             <div class="slide-header"><div class="editable-target" id="txt-canvas-23"><h2>Karya Relevan</h2></div><span class="tagline">KAJIAN PUSTAKA</span></div>
             <div class="slide-content-wrapper">
-                <div class="grid-2x2-large">
-                    <div class="grid-card focusable draggable-box" id="box-kr-1"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-24"><h3>1. Ochobot (BoBoiBoy)</h3><p>Karakter robot produksi Monsta dengan nuansa mekanik dan industrial. Menjadi inspirasi bentuk dasar bulat dengan elemen futuristik.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-kr-2"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-25"><h3>2. Cimubot (Papa Zola)</h3><p>Rujukan rupa robot yang menghadirkan kesan lebih lembut, ekspresif dan ramah, untuk mengimbangi bentuk mekanis yang kaku.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-kr-3"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-26"><h3>3. Maskot VTuber Falkana</h3><p>Kajian Jurnal BARIK (2025). Menggambarkan perbedaan pendekatan representasi entitas digital perusahaan tunggal vs multi-individu.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-kr-4"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-27"><h3>4. 3D Ekraf Banyumas</h3><p>Kajian Prosiding CENTIVE (2024). Menjadi studi komparasi teknis pemodelan 3D berbasis Blender untuk kebutuhan identitas non-game.</p></div></div>
+                <input type="file" id="up-kr1" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kr1')">
+                <input type="file" id="up-kr2" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kr2')">
+                <input type="file" id="up-kr3" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kr3')">
+                <input type="file" id="up-kr4" accept="image/*" style="display:none" onchange="previewImg(event, 'box-kr4')">
+                
+                <div class="grid-karya-container">
+                    <div class="karya-item-box draggable-box" id="box-kr-item1">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="karya-img-box img-wrapper" id="box-kr1" ondblclick="if(!isEditMode) document.getElementById('up-kr1').click()">
+                            <div class="placeholder-content"><span>📷</span><br>Ochobot</div>
+                        </div>
+                        <div class="editable-target focusable" id="txt-kr-1"><strong style="color:#1e3a8a;">Ochobot (Monsta)</strong><p style="font-size:0.9em; line-height:1.4; margin-bottom:0; margin-top:5px;">Acuan visual untuk bentuk dasar bulat yang memiliki kesan futuristik dan mekanik.</p></div>
+                    </div>
+                    
+                    <div class="karya-item-box draggable-box" id="box-kr-item2">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="karya-img-box img-wrapper" id="box-kr2" ondblclick="if(!isEditMode) document.getElementById('up-kr2').click()">
+                            <div class="placeholder-content"><span>📷</span><br>Cimubot</div>
+                        </div>
+                        <div class="editable-target focusable" id="txt-kr-2"><strong style="color:#1e3a8a;">Cimubot (Monsta)</strong><p style="font-size:0.9em; line-height:1.4; margin-bottom:0; margin-top:5px;">Acuan visual untuk memberikan kesan lembut, ekspresif, dan ramah pada karakter robot.</p></div>
+                    </div>
+                    
+                    <div class="karya-item-box draggable-box" id="box-kr-item3">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="karya-img-box img-wrapper" id="box-kr3" ondblclick="if(!isEditMode) document.getElementById('up-kr3').click()">
+                            <div class="placeholder-content"><span>📷</span><br>Falkana</div>
+                        </div>
+                        <div class="editable-target focusable" id="txt-kr-3"><strong style="color:#1e3a8a;">Maskot VTuber Falkana</strong><p style="font-size:0.9em; line-height:1.4; margin-bottom:0; margin-top:5px;">Referensi penerapan karakter fiksional sebagai wajah atau representasi entitas digital.</p></div>
+                    </div>
+                    
+                    <div class="karya-item-box draggable-box" id="box-kr-item4">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="karya-img-box img-wrapper" id="box-kr4" ondblclick="if(!isEditMode) document.getElementById('up-kr4').click()">
+                            <div class="placeholder-content"><span>📷</span><br>Maskot Banyumas</div>
+                        </div>
+                        <div class="editable-target focusable" id="txt-kr-4"><strong style="color:#1e3a8a;">Maskot 3D Banyumas</strong><p style="font-size:0.9em; line-height:1.4; margin-bottom:0; margin-top:5px;">Referensi teknis dalam pemodelan karakter 3D berbasis objek lokal.</p></div>
+                    </div>
+                </div>
+
+                <div class="box-diferensiasi editable-target focusable draggable-box" id="txt-canvas-27">
+                    <div class="drag-handle-card">✥</div>
+                    <strong style="color:#1e3a8a; font-size: 1.15em; display:block; margin-bottom: 8px;">Posisi & Diferensiasi Perancangan:</strong>
+                    <p style="margin-bottom:0; font-size:1.05em; line-height:1.5;">Perancangan ini tidak membuat karakter fiksi tunggal, melainkan menciptakan <strong>Sistem Karakter</strong> (1 <em>base-model</em> dengan 5 varian persona) sebagai aset operasional untuk mewakili 5 individu nyata di kanal TH Group.</p>
                 </div>
             </div>
         </div>
 
-        <!-- HALAMAN 10: METODE PERANCANGAN -->
+        <!-- HALAMAN 10: METODE PERANCANGAN & PENGUMPULAN DATA -->
         <div class="slide content-slide" data-name="metode perancangan">
-            <div class="slide-header"><div class="editable-target" id="txt-canvas-28"><h2>Metode Perancangan & Data</h2></div><span class="tagline">METODE PERANCANGAN</span></div>
+            <div class="slide-header"><div class="editable-target" id="txt-canvas-28"><h2>Metode Perancangan & Pengumpulan Data</h2></div><span class="tagline">METODOLOGI</span></div>
             <div class="slide-content-wrapper">
-                <div class="content-split">
-                    <div class="text-col editable-target focusable" id="txt-canvas-29"><h3 class="section-title">Pendekatan Research & Development (4D)</h3><ol style="margin-bottom: 25px;"><li><strong>Define:</strong> Mengidentifikasi ketiadaan wujud kanal & peluang absennya maskot di lini kompetitor.</li><li><strong>Design:</strong> Merancang sketsa alternatif dengan perpaduan nuansa mekanik dan ramah (pembeda di aksesori).</li><li><strong>Develop:</strong> Proses eksekusi pemodelan 3D di Blender (Base model, Pewarnaan, Rigging, Render).</li><li><strong>Disseminate:</strong> Penerapan maskot ke dalam material visual pendukung (YouTube, IG, TikTok).</li></ol><h3 class="section-title">Teknik Pengumpulan Data</h3><p style="margin-bottom: 0;"><strong>Primer:</strong> Observasi analitik konten kanal & wawancara arah visual dengan pemilik.<br><strong>Sekunder:</strong> Studi literatur perancangan maskot, psikologi warna, dan jurnal teknis 3D.</p></div>
-                    <div class="visual-col"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 150px; height: 150px; animation: slowSpin 15s infinite linear;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+                <div class="grid-2x2-large" style="grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;">
+                    <div class="grid-card focusable draggable-box" id="box-met-1">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-29">
+                            <h3 class="section-title">1. Pengumpulan Data</h3>
+                            <ul>
+                                <li style="margin-bottom:15px;"><strong>Primer:</strong><br>Observasi (YouTube Analytics) & Wawancara (Owner TH Group).</li>
+                                <li><strong>Sekunder:</strong><br>Studi literatur (Jurnal & Buku Desain).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-met-3">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-30">
+                            <h3 class="section-title">2. Metode Perancangan (4D)</h3>
+                            <ol>
+                                <li><strong>Define:</strong> Perumusan masalah & kebutuhan visual.</li>
+                                <li><strong>Design:</strong> Sketsa bentuk membulat & pembeda aksesori.</li>
+                                <li><strong>Develop:</strong> Produksi 3D (Blender), tekstur, hingga render.</li>
+                                <li><strong>Disseminate:</strong> Pengaplikasian aset ke format konten digital.</li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- HALAMAN 11: 5W1H -->
+        <!-- HALAMAN 11: ANALISIS DATA (5W1H) -->
         <div class="slide content-slide" data-name="analisis data">
-            <div class="slide-header"><div class="editable-target" id="txt-canvas-30"><h2>Analisis Data (5W+1H)</h2></div><span class="tagline">METODE PERANCANGAN</span></div>
+            <div class="slide-header"><div class="editable-target" id="txt-canvas-30-b"><h2>Analisis Data (5W+1H)</h2></div><span class="tagline">METODOLOGI</span></div>
             <div class="slide-content-wrapper">
                 <div class="grid-3x2">
-                    <div class="grid-card focusable draggable-box" id="box-5w-1"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-31"><h3>WHAT (Apa)</h3><p>Ketiadaan karakter maskot orisinal yang mewakili kanal dan kelima pengisi suaranya.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-5w-2"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-32"><h3>WHO (Siapa)</h3><p>Pemilik kanal yang rentan plagiasi konten, dan audiens yang tak punya objek visual.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-5w-3"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-33"><h3>WHEN (Kapan)</h3><p>Mendesak saat ini, merespon tren penurunan subscriber kanal (turun 35%).</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-5w-4"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-34"><h3>WHERE (Di Mana)</h3><p>Sangat dibutuhkan di YouTube (utama), yang juga menjalar ke TikTok dan IG.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-5w-5"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-35"><h3>WHY (Mengapa)</h3><p>Eksperimen visual lain (thumbnail) mudah ditiru. Kompetitor belum pakai maskot.</p></div></div>
-                    <div class="grid-card focusable draggable-box" id="box-5w-6"><div class="drag-handle-card">✥ Geser</div><div class="editable-target" id="txt-canvas-36"><h3>HOW (Bagaimana)</h3><p>Menciptakan desain 5 maskot 3D fungsional yang mewakili individu pengisi suara.</p></div></div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-1">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-31">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">WHAT (Apa)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Ketiadaan representasi karakter visual.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-2">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-32">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">WHO (Siapa)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Berdampak pada kanal dan hilangnya loyalitas audiens.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-3">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-33">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">WHEN (Kapan)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Mendesak akibat penurunan performa subscriber.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-4">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-34">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">WHERE (Di Mana)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Lintas platform (YouTube, TikTok, IG).</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-5">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-35">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">WHY (Mengapa)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Logo statis gagal membangun hubungan parasosial.</p>
+                        </div>
+                    </div>
+                    <div class="grid-card focusable draggable-box" id="box-5w-6">
+                        <div class="drag-handle-card">✥</div>
+                        <div class="editable-target" id="txt-canvas-36">
+                            <h3 style="color:#1e3a8a; margin-bottom:10px;">HOW (Bagaimana)</h3>
+                            <p style="margin-bottom:0; font-size:1em;">Merancang 5 varian karakter maskot 3D.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -412,56 +573,30 @@
         <div class="controls"><button id="prevBtn" class="nav-btn" onclick="changeSlide(-1)">❮ Prev</button><span id="page-num">1 / 12</span><button id="nextBtn" class="nav-btn" onclick="changeSlide(1)">Next ❯</button></div>
     </div>
 
-    <!-- SCRIPT FIREBASE & LOGIKA UTAMA -->
+    <!-- SCRIPT UTAMA (VERSI OFFLINE PENUH) -->
     <script>
-        // INISIALISASI FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCCUYPie12Vd_mEkOH-Z6VbFHm8L4mkUJk",
-            authDomain: "ppt-ta.firebaseapp.com",
-            projectId: "ppt-ta",
-            storageBucket: "ppt-ta.firebasestorage.app",
-            messagingSenderId: "228724145382",
-            appId: "1:228724145382:web:e0749b8433800f26598f27"
-        };
-        firebase.initializeApp(firebaseConfig); const db = firebase.database();
-
-        // 1. SETTINGS & FIREBASE SYNC (TEXT, BOX, IMG)
         function toggleSettingsPanel() { document.getElementById('settings-modal').style.display = document.getElementById('settings-modal').style.display === 'block' ? 'none' : 'block'; }
         function updateSlideDimensions() {
             const w = document.getElementById('set-width').value; const h = document.getElementById('set-height').value;
             document.getElementById('val-width').innerText = w + "px"; document.getElementById('val-height').innerText = h + "px";
             document.documentElement.style.setProperty('--slide-max-width', w + 'px'); document.documentElement.style.setProperty('--slide-max-height', h + 'px');
         }
-        function saveSettings() { db.ref('ta_dimensi').set({ w: document.getElementById('set-width').value, h: document.getElementById('set-height').value }); }
-        function loadSettings() { db.ref('ta_dimensi').once('value').then((snap) => { const saved = snap.val(); if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; updateSlideDimensions(); } }); }
 
-        function saveTextEdits() { const edits = {}; document.querySelectorAll('.editable-target').forEach(el => { edits[el.id] = { html: el.innerHTML, fs: el.style.fontSize }; }); db.ref('ta_text').set(edits); }
-        function loadTextEdits() { db.ref('ta_text').once('value').then((snap) => { const savedText = snap.val(); if (savedText) { document.querySelectorAll('.editable-target').forEach(el => { if (savedText[el.id]) { el.innerHTML = savedText[el.id].html; if(savedText[el.id].fs) el.style.fontSize = savedText[el.id].fs; } }); } }); }
+        window.onload = () => { showSlide(currentSlideIndex); };
 
-        function saveBoxState(box) { db.ref('ta_box/' + box.id).set({ w: box.style.width, h: box.style.height, x: box.dataset.x || 0, y: box.dataset.y || 0 }); }
-        function loadBoxState() { db.ref('ta_box').once('value').then((snap) => { const savedBoxes = snap.val(); if(savedBoxes) { document.querySelectorAll('.draggable-box').forEach(box => { if(savedBoxes[box.id]) { box.style.width = savedBoxes[box.id].w; box.style.height = savedBoxes[box.id].h; box.dataset.x = savedBoxes[box.id].x; box.dataset.y = savedBoxes[box.id].y; box.style.transform = `translate(${savedBoxes[box.id].x}px, ${savedBoxes[box.id].y}px)`; } }); } }); }
-
-        function saveImageState(boxId, img) { db.ref('ta_img/' + boxId).set({ src: img.src, x: img.dataset.x || 0, y: img.dataset.y || 0, scale: img.dataset.scale || 1 }).catch(e => console.warn("Gambar terlalu besar.")); }
-        function loadImagesState() { db.ref('ta_img').once('value').then((snap) => { const savedImgs = snap.val(); if(savedImgs) { const boxes = ['box-kp1', 'box-kp2', 'box-kp3', 'box-kp4', 'box-kp5', 'box-kp6', 'box-kp7', 'box-kp8']; boxes.forEach(boxId => { if (savedImgs[boxId]) { const sImg = savedImgs[boxId]; const box = document.getElementById(boxId); if(box) { box.classList.add('has-image'); box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if (!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = sImg.src; img.style.display = 'block'; img.dataset.x = sImg.x; img.dataset.y = sImg.y; img.dataset.scale = sImg.scale; img.style.transform = `translate(${sImg.x}px, ${sImg.y}px) scale(${sImg.scale})`; } } }); } }); }
-
-        function resetSemuaEditan() { if(confirm("Yakin mau menghapus SEMUA editan dari Database?")) { db.ref().remove().then(() => location.reload()); } }
-
-        window.onload = () => { loadSettings(); loadTextEdits(); loadBoxState(); loadImagesState(); showSlide(currentSlideIndex); };
-
-        // 2. FITUR EDIT TEKS RICH TEXT
         let isEditMode = false; let clickCount = 0; let clickTimer; let activeTextEl = null; let currentFontSizeEm = 1.0; let isMenuVisible = false;
         document.getElementById('secret-trigger').addEventListener('click', () => { clickCount++; clearTimeout(clickTimer); clickTimer = setTimeout(() => { clickCount = 0; }, 600); if (clickCount === 3) { isMenuVisible = !isMenuVisible; document.querySelectorAll('.secret-btn').forEach(btn => btn.style.display = isMenuVisible ? 'flex' : 'none'); clickCount = 0; } });
 
         function toggleEditMode() {
             isEditMode = !isEditMode; const btn = document.getElementById('btn-edit'); const svgEdit = document.getElementById('svg-edit'); const svgSave = document.getElementById('svg-save'); const toolbar = document.getElementById('inline-edit-toolbar'); const editableEls = document.querySelectorAll('.editable-target');
             if (isEditMode) { document.body.classList.add('is-editing'); btn.classList.add('editing'); svgEdit.style.display = 'none'; svgSave.style.display = 'block'; toolbar.style.display = 'flex'; editableEls.forEach(el => el.setAttribute('contenteditable', 'true')); } 
-            else { document.body.classList.remove('is-editing'); btn.classList.remove('editing'); svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null; editableEls.forEach(el => el.setAttribute('contenteditable', 'false')); saveTextEdits(); }
+            else { document.body.classList.remove('is-editing'); btn.classList.remove('editing'); svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null; editableEls.forEach(el => el.setAttribute('contenteditable', 'false')); }
         }
         document.querySelectorAll('.editable-target').forEach(el => { el.addEventListener('focus', function() { if(isEditMode) { activeTextEl = this; currentFontSizeEm = parseFloat(window.getComputedStyle(this).fontSize) / 16; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); } }); });
+        
         function formatText(cmd, val = null) { document.execCommand(cmd, false, val); if(activeTextEl) activeTextEl.focus(); }
         function changeActiveFontSize(step) { if(!activeTextEl) return; currentFontSizeEm += step; if(currentFontSizeEm < 0.5) currentFontSizeEm = 0.5; if(currentFontSizeEm > 10.0) currentFontSizeEm = 10.0; activeTextEl.style.fontSize = currentFontSizeEm.toFixed(1) + 'em'; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); }
 
-        // 3. VOICE COMMAND (UPDATE: AUTO CLEAR & "MONITOR")
         let recognition; let isVoiceActive = false; let lastProcessedIndex = 0;
         const micDot = document.getElementById('mic-dot'); const modalCekSound = document.getElementById('mic-test-modal'); const liveTranscript = document.getElementById('live-transcript');
         
@@ -472,33 +607,27 @@
 
             recognition.onresult = function(event) {
                 let interimTranscript = ''; let finalTranscript = '';
-                
                 for (let i = lastProcessedIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
                     else interimTranscript += event.results[i][0].transcript;
                 }
                 
                 let fullTranscript = (finalTranscript + interimTranscript).toLowerCase().trim();
-                if(modalCekSound.style.display === 'block') { liveTranscript.innerHTML = fullTranscript || "...mendengarkan..."; }
+                if(modalCekSound.style.display === 'block') { liveTranscript.innerText = fullTranscript || "...mendengarkan..."; }
                 let isCommandExecuted = false;
 
-                // A. KONTROL LAYAR (FOKUS) - Diubah ke "monitor" biar gak typo
-                if (fullTranscript.includes("matikan monitor") || fullTranscript.includes("mati monitor")) { 
+                if (fullTranscript.includes("layar mati") || fullTranscript.includes("layar off") || fullTranscript.includes("layar of") || fullTranscript.includes("layar op") || fullTranscript.includes("layar ov")) { 
                     document.getElementById("blackout-screen").style.display = "block"; isCommandExecuted = true; 
                 }
-                else if (fullTranscript.includes("nyalakan monitor") || fullTranscript.includes("hidupkan monitor")) { 
+                else if (fullTranscript.includes("layar hidup") || fullTranscript.includes("layar on") || fullTranscript.includes("layar nyala")) { 
                     document.getElementById("blackout-screen").style.display = "none"; isCommandExecuted = true; 
                 }
-                
-                // B. NAVIGASI DASAR MAJU MUNDUR (Toleransi Typo "selaid", "sled")
                 else if (fullTranscript.includes("slide selanjutnya") || fullTranscript.includes("halaman selanjutnya") || fullTranscript.includes("selaid selanjutnya") || fullTranscript.includes("sled selanjutnya") || fullTranscript.includes("slet selanjutnya")) { 
                     changeSlide(1); isCommandExecuted = true; 
                 } 
                 else if (fullTranscript.includes("slide sebelumnya") || fullTranscript.includes("halaman sebelumnya") || fullTranscript.includes("selaid sebelumnya") || fullTranscript.includes("sled sebelumnya") || fullTranscript.includes("slet sebelumnya")) { 
                     changeSlide(-1); isCommandExecuted = true; 
                 }
-                
-                // C. LOMPAT HALAMAN (SPESIFIK ANGKA ATAU TOPIK)
                 else {
                     const pageTriggers = [
                         { index: 0, kw: ["halaman satu", "halaman 1", "slide satu", "slide 1", "pertama"] },
@@ -508,9 +637,9 @@
                         { index: 4, kw: ["halaman lima", "halaman 5", "slide lima", "slide 5", "kelima", "identifikasi"] },
                         { index: 5, kw: ["halaman enam", "halaman 6", "slide enam", "slide 6", "keenam", "batasan"] },
                         { index: 6, kw: ["halaman tujuh", "halaman 7", "slide tujuh", "slide 7", "ketujuh", "rumusan", "tujuan"] },
-                        { index: 7, kw: ["halaman delapan", "halaman 8", "slide delapan", "slide 8", "kedelapan", "kajian praksis", "data verbal"] },
-                        { index: 8, kw: ["halaman sembilan", "halaman 9", "slide sembilan", "slide 9", "kesembilan", "karya relevan", "pustaka"] },
-                        { index: 9, kw: ["halaman sepuluh", "halaman 10", "slide sepuluh", "slide 10", "kesepuluh", "metode"] },
+                        { index: 7, kw: ["halaman delapan", "halaman 8", "slide delapan", "slide 8", "kedelapan", "kajian praksis", "praksis", "data verbal"] },
+                        { index: 8, kw: ["halaman sembilan", "halaman 9", "slide sembilan", "slide 9", "kesembilan", "karya relevan", "pembanding"] },
+                        { index: 9, kw: ["halaman sepuluh", "halaman 10", "slide sepuluh", "slide 10", "kesepuluh", "metode", "pengumpulan data"] },
                         { index: 10, kw: ["halaman sebelas", "halaman 11", "slide sebelas", "slide 11", "kesebelas", "analisis data", "5w"] },
                         { index: 11, kw: ["halaman dua belas", "halaman 12", "slide dua belas", "slide 12", "keduabelas", "penutup", "terima kasih"] }
                     ];
@@ -522,21 +651,10 @@
                     }
                 }
 
-                // FITUR AUTO CLEAR TEKS BIKIN MATA NGGAK SEPET
-                if(isCommandExecuted) { 
-                    console.log("✅ Dieksekusi: " + fullTranscript); 
-                    
-                    // Reset pembacaan teks supaya tumpukan mulai dari nol lagi
-                    lastProcessedIndex = event.results.length; 
-                    
-                    // Kasih info visual ke dosen/pengguna
-                    if(modalCekSound.style.display === 'block') {
-                        liveTranscript.innerHTML = "<span style='color: #16a34a;'>✔ Perintah dijalankan...</span>";
-                    }
-                }
+                if(isCommandExecuted) { console.log("✅ Dieksekusi: " + fullTranscript); lastProcessedIndex = event.results.length; }
             };
             
-            recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerHTML = "<span style='color:red;'>Error: " + e.error + "</span>"; };
+            recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerText = "Error: " + e.error; };
             recognition.onend = function() { if(isVoiceActive) recognition.start(); };
         }
 
@@ -548,7 +666,6 @@
         function startRealVoice() { modalCekSound.style.display = 'none'; }
         function closeMicModal() { modalCekSound.style.display = 'none'; isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); }
 
-        // 4. LOGIKA GANTI SLIDE
         let currentSlideIndex = 0; const slides = document.querySelectorAll('.slide');
         const pageNum = document.getElementById('page-num'); const prevBtn = document.getElementById('prevBtn'); const nextBtn = document.getElementById('nextBtn'); const progressBar = document.getElementById('progress-bar');
         function showSlide(index) {
@@ -560,19 +677,17 @@
         function changeSlide(step) { let newIndex = currentSlideIndex + step; if (newIndex >= 0 && newIndex < slides.length) { currentSlideIndex = newIndex; showSlide(currentSlideIndex); } }
         function animateValue(id, start, end, duration, isFloat) { let obj = document.getElementById(id); if (!obj) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); let currentVal = start + (progress * (2 - progress)) * (end - start); obj.innerHTML = isFloat ? currentVal.toFixed(1) : Math.floor(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = end; }; window.requestAnimationFrame(step); }
 
-        // 5. CAROUSEL
         function goToInnerSlide(index) { const track = document.getElementById('kp-track'); const dots = document.querySelectorAll('.inner-dot'); track.style.transform = `translateX(-${index * 25}%)`; dots.forEach(dot => dot.classList.remove('active')); dots[index].classList.add('active'); }
 
-        // 6. DRAG & RESIZE KOTAK & GAMBAR
         let isDraggingEl = false, startX, startY, currentEl = null;
         function previewImg(event, boxId) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { const imgTemp = new Image(); imgTemp.onload = () => { const canvas = document.createElement('canvas'); let width = imgTemp.width; let height = imgTemp.height; if (width > 1200) { height *= 1200 / width; width = 1200; } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(imgTemp, 0, 0, width, height); applyImageToBox(canvas.toDataURL('image/jpeg', 0.8), boxId); }; imgTemp.src = e.target.result; }; reader.readAsDataURL(file); } }
-        function applyImageToBox(src, boxId) { const box = document.getElementById(boxId); box.classList.add('has-image'); box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`; saveImageState(boxId, img); }
+        function applyImageToBox(src, boxId) { const box = document.getElementById(boxId); box.classList.add('has-image'); if(box.querySelector('.placeholder-content')) box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`; }
 
         document.addEventListener('mousedown', (e) => { if(e.target.classList.contains('draggable-img') && !isEditMode) { isDraggingEl = true; currentEl = e.target; } else if(e.target.classList.contains('drag-handle-card')) { isDraggingEl = true; currentEl = e.target.closest('.draggable-box'); currentEl.classList.add('is-dragging'); } else { return; } startX = e.clientX; startY = e.clientY; e.preventDefault(); });
         document.addEventListener('mousemove', (e) => { if(!isDraggingEl || !currentEl) return; const dx = e.clientX - startX; const dy = e.clientY - startY; let x = parseFloat(currentEl.dataset.x || 0) + dx; let y = parseFloat(currentEl.dataset.y || 0) + dy; if(currentEl.classList.contains('draggable-img')) { let scale = parseFloat(currentEl.dataset.scale || 1); currentEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; } else { currentEl.style.transform = `translate(${x}px, ${y}px)`; } currentEl.dataset.x = x; currentEl.dataset.y = y; startX = e.clientX; startY = e.clientY; });
-        document.addEventListener('mouseup', () => { if(isDraggingEl && currentEl) { if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); saveBoxState(currentEl); } else if(currentEl.classList.contains('draggable-img')) { saveImageState(currentEl.parentElement.id, currentEl); } } isDraggingEl = false; currentEl = null; });
-        document.querySelectorAll('.draggable-box').forEach(box => { box.addEventListener('mouseup', () => { if(isEditMode) saveBoxState(box); }); });
-        document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; clearTimeout(wrapper.zoomTimer); wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300); }, {passive: false}); });
+        document.addEventListener('mouseup', () => { if(isDraggingEl && currentEl) { if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); } } isDraggingEl = false; currentEl = null; });
+        
+        document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; }, {passive: false}); });
         document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } }); });
         document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); }); });
         document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); });
