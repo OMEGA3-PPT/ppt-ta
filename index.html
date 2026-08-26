@@ -56,7 +56,7 @@
         .voice-instruction p { margin-bottom: 5px; color: #1e3a8a; }
         .voice-instruction::-webkit-scrollbar { width: 6px; }
         .voice-instruction::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: 0.3s; }
         .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1em; transition: 0.2s; }
         .btn-primary:hover { background: #2563eb; }
         .btn-close { background: transparent; color: #64748b; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; width: 100%; padding: 5px; }
@@ -213,7 +213,7 @@
         <button id="btn-edit" class="icon-btn secret-btn" onclick="toggleEditMode()" title="Mode Edit Teks"><svg id="svg-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><svg id="svg-save" viewBox="0 0 24 24" style="display:none;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg></button>
     </div>
 
-    <!-- UI MODAL CEK SOUND TERBARU (GAYA ASISTEN) -->
+    <!-- UI MODAL CEK SOUND TERBARU (SUDAH DIUBAH KE "MONITOR") -->
     <div id="mic-test-modal">
         <h3 style="color: #1e3a8a; margin-bottom: 5px;">Cek Sound Voice Command</h3>
         <p style="font-size: 0.85em; color: #475569; margin-bottom: 10px;">Bicara ke mic. Berikut daftar perintah khusus Anda:</p>
@@ -221,8 +221,8 @@
         <div class="voice-instruction">
             <p><b>1. Kontrol Layar (Fokus):</b></p>
             <ul>
-                <li>"Layar mati" / "Layar off"</li>
-                <li>"Layar hidup" / "Layar on" / "Layar nyala"</li>
+                <li>"Matikan monitor"</li>
+                <li>"Nyalakan monitor" / "Hidupkan monitor"</li>
             </ul>
             <p><b>2. Navigasi Dasar:</b></p>
             <ul>
@@ -461,7 +461,7 @@
         function formatText(cmd, val = null) { document.execCommand(cmd, false, val); if(activeTextEl) activeTextEl.focus(); }
         function changeActiveFontSize(step) { if(!activeTextEl) return; currentFontSizeEm += step; if(currentFontSizeEm < 0.5) currentFontSizeEm = 0.5; if(currentFontSizeEm > 10.0) currentFontSizeEm = 10.0; activeTextEl.style.fontSize = currentFontSizeEm.toFixed(1) + 'em'; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); }
 
-        // 3. VOICE COMMAND (GAYA ASISTEN & ANTI TYPO)
+        // 3. VOICE COMMAND (UPDATE: AUTO CLEAR & "MONITOR")
         let recognition; let isVoiceActive = false; let lastProcessedIndex = 0;
         const micDot = document.getElementById('mic-dot'); const modalCekSound = document.getElementById('mic-test-modal'); const liveTranscript = document.getElementById('live-transcript');
         
@@ -472,20 +472,21 @@
 
             recognition.onresult = function(event) {
                 let interimTranscript = ''; let finalTranscript = '';
+                
                 for (let i = lastProcessedIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
                     else interimTranscript += event.results[i][0].transcript;
                 }
                 
                 let fullTranscript = (finalTranscript + interimTranscript).toLowerCase().trim();
-                if(modalCekSound.style.display === 'block') { liveTranscript.innerText = fullTranscript || "...mendengarkan..."; }
+                if(modalCekSound.style.display === 'block') { liveTranscript.innerHTML = fullTranscript || "...mendengarkan..."; }
                 let isCommandExecuted = false;
 
-                // A. KONTROL LAYAR (FOKUS) - Deteksi Typo of, ov, op
-                if (fullTranscript.includes("layar mati") || fullTranscript.includes("layar off") || fullTranscript.includes("layar of") || fullTranscript.includes("layar op") || fullTranscript.includes("layar ov")) { 
+                // A. KONTROL LAYAR (FOKUS) - Diubah ke "monitor" biar gak typo
+                if (fullTranscript.includes("matikan monitor") || fullTranscript.includes("mati monitor")) { 
                     document.getElementById("blackout-screen").style.display = "block"; isCommandExecuted = true; 
                 }
-                else if (fullTranscript.includes("layar hidup") || fullTranscript.includes("layar on") || fullTranscript.includes("layar nyala")) { 
+                else if (fullTranscript.includes("nyalakan monitor") || fullTranscript.includes("hidupkan monitor")) { 
                     document.getElementById("blackout-screen").style.display = "none"; isCommandExecuted = true; 
                 }
                 
@@ -515,17 +516,27 @@
                     ];
 
                     for (let p of pageTriggers) {
-                        // Harus pake trigger "tampilkan" biar gak gampang kepencet pas jelasin materi
                         if (p.kw.some(word => fullTranscript.includes("tampilkan " + word))) {
                             currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; break;
                         }
                     }
                 }
 
-                if(isCommandExecuted) { console.log("✅ Dieksekusi: " + fullTranscript); lastProcessedIndex = event.results.length; }
+                // FITUR AUTO CLEAR TEKS BIKIN MATA NGGAK SEPET
+                if(isCommandExecuted) { 
+                    console.log("✅ Dieksekusi: " + fullTranscript); 
+                    
+                    // Reset pembacaan teks supaya tumpukan mulai dari nol lagi
+                    lastProcessedIndex = event.results.length; 
+                    
+                    // Kasih info visual ke dosen/pengguna
+                    if(modalCekSound.style.display === 'block') {
+                        liveTranscript.innerHTML = "<span style='color: #16a34a;'>✔ Perintah dijalankan...</span>";
+                    }
+                }
             };
             
-            recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerText = "Error: " + e.error; };
+            recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerHTML = "<span style='color:red;'>Error: " + e.error + "</span>"; };
             recognition.onend = function() { if(isVoiceActive) recognition.start(); };
         }
 
