@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Presentasi Proposal TA - Ahmad Yamil (ONLINE V2)</title>
+    <title>Presentasi Proposal TA - Ahmad Yamil (ONLINE FINAL)</title>
     <!-- FIREBASE SDK (WAJIB ADA BUAT ONLINE) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,7 +13,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body, html { background-color: #020617; color: #333; width: 100vw; height: 100vh; overflow: hidden; }
 
-        /* --- BLACKOUT & ORIENTATION --- */
         #blackout-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 999998; }
         #orientation-warning { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; color: white; z-index: 1000000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         #orientation-warning svg { width: 80px; height: 80px; fill: #3b82f6; margin-bottom: 20px; animation: rotatePhone 2s infinite ease-in-out; }
@@ -32,7 +31,6 @@
         .orb-3 { width: 400px; height: 400px; background: rgba(147, 197, 253, 0.15); top: 35%; left: 35%; animation: float 12s infinite alternate ease-in-out; }
         @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(60px, 80px) scale(1.1); } }
 
-        /* --- UI CONTROLS --- */
         .top-controls { position: fixed; top: 25px; right: 25px; z-index: 999999; display: flex; gap: 15px; align-items: center; }
         .icon-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .icon-btn svg { width: 20px; height: 20px; fill: #334155; transition: 0.2s; }
@@ -49,7 +47,6 @@
         @keyframes blinkSlow { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } }
         @keyframes blinkFast { 0%, 100% { opacity: 1; transform: scale(1.2); } 50% { opacity: 0.5; transform: scale(0.8); } }
 
-        /* --- MIC TEST MODAL --- */
         #mic-test-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 480px; max-width: 90vw; background: rgba(255,255,255,0.98); backdrop-filter: blur(15px); border-radius: 16px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 10000; text-align: center; border: 2px solid #3b82f6; }
         .voice-instruction { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; font-size: 0.9em; max-height: 250px; overflow-y: auto; }
         .voice-instruction ul { margin-left: 20px; color: #334155; line-height: 1.5; margin-bottom: 12px; }
@@ -59,7 +56,6 @@
         .btn-primary:hover { background: #2563eb; }
         .btn-close { background: transparent; color: #64748b; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; width: 100%; padding: 5px; }
 
-        /* --- INLINE EDIT TOOLBAR & SETTINGS --- */
         #settings-modal { display: none; position: fixed; top: 85px; right: 25px; width: 300px; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-radius: 16px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); z-index: 10000; border: 1px solid rgba(255,255,255,0.6); }
         .setting-group { margin-bottom: 20px; }
         .setting-group label { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9em; color: #475569; margin-bottom: 5px; }
@@ -73,7 +69,6 @@
         .is-editing .editable-target { outline: 2px dashed #3b82f6; outline-offset: 4px; background: rgba(59,130,246,0.02); border-radius: 8px; padding: 5px; transition: 0.2s; cursor: text; min-height: 25px; }
         .is-editing .editable-target:focus { outline: 2px solid #3b82f6; background: rgba(59,130,246,0.08); }
 
-        /* --- SLIDE CSS & ANIMATIONS --- */
         @keyframes morphLiquid { 0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg) scale(1); } 100% { border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%; transform: rotate(15deg) scale(1.05); } }
         .slide { position: absolute; top: 50%; left: 50%; width: 96%; max-width: var(--slide-max-width); height: 88vh; max-height: var(--slide-max-height); background: #ffffff; box-shadow: 0 30px 60px rgba(0,0,0,0.4); border-radius: 24px; padding: 50px 70px; overflow-y: auto; overflow-x: hidden; opacity: 0; visibility: hidden; z-index: 5; display: flex; flex-direction: column; justify-content: flex-start; transform: translate(-50%, -50%) translateX(40px) scale(0.96); transition: all 0.6s cubic-bezier(0.25, 1, 0.2, 1); border-top: 8px solid #3b82f6; }
         .slide.active { opacity: 1; visibility: visible; z-index: 10; transform: translate(-50%, -50%) translateX(0) scale(1); }
@@ -97,7 +92,6 @@
         .editable-target ul { list-style-type: disc; } 
         .editable-target ul ul { list-style-type: circle; margin-bottom: 5px; margin-top: 5px; } 
         .editable-target ul ul ul { list-style-type: square; }
-        
         .editable-target ol { list-style-type: upper-alpha; } 
         .editable-target ol ol { list-style-type: lower-alpha; margin-bottom: 5px; margin-top: 5px; } 
         .editable-target ol ol ol { list-style-type: lower-roman; } 
@@ -123,7 +117,6 @@
         .is-editing .drag-handle-card { display: block; }
         .is-dragging { transition: none !important; opacity: 0.9; }
 
-        /* Visual Elements */
         .voice-equalizer { display: flex; gap: 12px; align-items: flex-end; height: 160px; }
         .voice-bar { width: 20px; border-radius: 20px; background: linear-gradient(180deg, #3b82f6, #ea580c); animation: equalize 1.2s infinite alternate ease-in-out; }
         .voice-bar:nth-child(1) { height: 40px; animation-delay: 0.1s; } .voice-bar:nth-child(2) { height: 100px; animation-delay: 0.4s; }
@@ -179,20 +172,15 @@
         .placeholder-content { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600; text-align: center; cursor: pointer; width: 100%; height: 100%; z-index: 2; font-size: 0.9em; padding: 10px; }
         .draggable-img { position: absolute; cursor: grab; transform-origin: center; display: none; max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        /* GRID KARYA RELEVAN */
         .grid-karya-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 100%; margin-bottom: 15px; flex: 1;}
         .karya-item-box { background: rgba(255,255,255,0.85); border: 1px solid #e2e8f0; border-radius: 14px; padding: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
         .karya-img-box { width: 100%; height: 140px; border-radius: 10px; border: 2px dashed #cbd5e1; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
         .box-diferensiasi { background: #eff6ff; border-left: 6px solid #3b82f6; border-radius: 0 12px 12px 0; padding: 15px 20px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
 
-        /* GRID METODE 2 KOLOM */
         .grid-2x2-large { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; width: 100%; height: 100%; }
         .grid-card { background: rgba(255,255,255,0.85); border: 1px solid #e2e8f0; border-radius: 16px; padding: 30px; border-top: 6px solid #3b82f6; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; z-index: 2; width: 100%; }
-
-        /* GRID 5W1H (6 KOTAK) */
         .grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; width: 100%; height: 100%; }
 
-        /* Cover & Closing */
         .title-slide-custom { padding: 0 !important; display: flex !important; flex-direction: row !important; align-items: stretch; border-top: none !important; }
         .title-left-decor { width: 38%; position: relative; background-color: #ffffff; background-image: radial-gradient(#cbd5e1 2px, transparent 2px); background-size: 25px 25px; overflow: hidden; border-right: 1px solid #e2e8f0; animation: panDots 20s linear infinite; z-index: 1; }
         .shape-blue { position: absolute; width: 600px; height: 600px; background: #3b82f6; top: -200px; left: -250px; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; animation: morphLiquid 8s ease-in-out infinite alternate; z-index: 2; }
@@ -228,6 +216,7 @@
     <div class="top-controls">
         <div class="mic-dot-container" onclick="triggerMicCheck()" title="Voice Command"><div id="mic-dot" class="mic-dot dot-green"></div></div>
         <button id="btn-settings" class="icon-btn secret-btn" onclick="toggleSettingsPanel()" title="Pengaturan Ukuran"><svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg></button>
+        <button id="btn-reset" class="icon-btn secret-btn" onclick="resetSemuaEditan()" title="Reset Semua Data"><svg viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z"/></svg></button>
         <button id="btn-edit" class="icon-btn secret-btn" onclick="toggleEditMode()" title="Mode Edit Teks"><svg id="svg-edit" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><svg id="svg-save" viewBox="0 0 24 24" style="display:none;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg></button>
     </div>
 
@@ -270,8 +259,7 @@
         <button class="format-btn" onclick="formatText('justifyRight')" title="Rata Kanan">↦</button>
         <button class="format-btn" onclick="formatText('justifyFull')" title="Rata Penuh">≡</button>
         <div class="divider"></div>
-        <!-- FITUR LIST BARU -->
-        <button class="format-btn" onclick="formatText('insertUnorderedList')" title="List Bulat (Bullet)">●</button>
+        <button class="format-btn" onclick="formatText('insertUnorderedList')" title="List Bulat">●</button>
         <button class="format-btn" onclick="formatText('insertOrderedList')" title="List Angka/Huruf">A.</button>
         <button class="format-btn" onclick="formatText('outdent')" title="Kurangi Indent (Geser Kiri)">⇤</button>
         <button class="format-btn" onclick="formatText('indent')" title="Tambah Indent (Bikin Sub-list)">⇥</button>
@@ -283,8 +271,8 @@
     
     <div id="settings-modal">
         <h3 style="color:#1e3a8a; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Pengaturan Bingkai</h3>
-        <div class="setting-group"><label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label><input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()"></div>
-        <div class="setting-group"><label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label><input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()"></div>
+        <div class="setting-group"><label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label><input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
+        <div class="setting-group"><label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label><input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
         <button onclick="toggleSettingsPanel()" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tutup</button>
     </div>
 
@@ -573,16 +561,41 @@
         <div class="controls"><button id="prevBtn" class="nav-btn" onclick="changeSlide(-1)">❮ Prev</button><span id="page-num">1 / 12</span><button id="nextBtn" class="nav-btn" onclick="changeSlide(1)">Next ❯</button></div>
     </div>
 
-    <!-- SCRIPT UTAMA (VERSI OFFLINE PENUH) -->
+    <!-- SCRIPT UTAMA (ONLINE V2) -->
     <script>
+        // INISIALISASI FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCUYPie12Vd_mEkOH-Z6VbFHm8L4mkUJk",
+            authDomain: "ppt-ta.firebaseapp.com",
+            projectId: "ppt-ta",
+            storageBucket: "ppt-ta.firebasestorage.app",
+            messagingSenderId: "228724145382",
+            appId: "1:228724145382:web:e0749b8433800f26598f27"
+        };
+        firebase.initializeApp(firebaseConfig); const db = firebase.database();
+
+        // 1. SETTINGS & FIREBASE SYNC (MENGGUNAKAN FOLDER _v2 AGAR TIDAK BENTROK)
         function toggleSettingsPanel() { document.getElementById('settings-modal').style.display = document.getElementById('settings-modal').style.display === 'block' ? 'none' : 'block'; }
         function updateSlideDimensions() {
             const w = document.getElementById('set-width').value; const h = document.getElementById('set-height').value;
             document.getElementById('val-width').innerText = w + "px"; document.getElementById('val-height').innerText = h + "px";
             document.documentElement.style.setProperty('--slide-max-width', w + 'px'); document.documentElement.style.setProperty('--slide-max-height', h + 'px');
         }
+        function saveSettings() { db.ref('ta_dimensi_v2').set({ w: document.getElementById('set-width').value, h: document.getElementById('set-height').value }); }
+        function loadSettings() { db.ref('ta_dimensi_v2').once('value').then((snap) => { const saved = snap.val(); if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; updateSlideDimensions(); } }); }
 
-        window.onload = () => { showSlide(currentSlideIndex); };
+        function saveTextEdits() { const edits = {}; document.querySelectorAll('.editable-target').forEach(el => { edits[el.id] = { html: el.innerHTML, fs: el.style.fontSize }; }); db.ref('ta_text_v2').set(edits); }
+        function loadTextEdits() { db.ref('ta_text_v2').once('value').then((snap) => { const savedText = snap.val(); if (savedText) { document.querySelectorAll('.editable-target').forEach(el => { if (savedText[el.id]) { el.innerHTML = savedText[el.id].html; if(savedText[el.id].fs) el.style.fontSize = savedText[el.id].fs; } }); } }); }
+
+        function saveBoxState(box) { db.ref('ta_box_v2/' + box.id).set({ w: box.style.width, h: box.style.height, x: box.dataset.x || 0, y: box.dataset.y || 0 }); }
+        function loadBoxState() { db.ref('ta_box_v2').once('value').then((snap) => { const savedBoxes = snap.val(); if(savedBoxes) { document.querySelectorAll('.draggable-box').forEach(box => { if(savedBoxes[box.id]) { box.style.width = savedBoxes[box.id].w; box.style.height = savedBoxes[box.id].h; box.dataset.x = savedBoxes[box.id].x; box.dataset.y = savedBoxes[box.id].y; box.style.transform = `translate(${savedBoxes[box.id].x}px, ${savedBoxes[box.id].y}px)`; } }); } }); }
+
+        function saveImageState(boxId, img) { db.ref('ta_img_v2/' + boxId).set({ src: img.src, x: img.dataset.x || 0, y: img.dataset.y || 0, scale: img.dataset.scale || 1 }).catch(e => console.warn("Gambar terlalu besar.")); }
+        function loadImagesState() { db.ref('ta_img_v2').once('value').then((snap) => { const savedImgs = snap.val(); if(savedImgs) { const boxes = ['box-kp1', 'box-kp2', 'box-kp3', 'box-kp4', 'box-kp5', 'box-kp6', 'box-kp7', 'box-kp8', 'box-kr1', 'box-kr2', 'box-kr3', 'box-kr4']; boxes.forEach(boxId => { if (savedImgs[boxId]) { const sImg = savedImgs[boxId]; const box = document.getElementById(boxId); if(box) { box.classList.add('has-image'); if(box.querySelector('.placeholder-content')) box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if (!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = sImg.src; img.style.display = 'block'; img.dataset.x = sImg.x; img.dataset.y = sImg.y; img.dataset.scale = sImg.scale; img.style.transform = `translate(${sImg.x}px, ${sImg.y}px) scale(${sImg.scale})`; } } }); } }); }
+
+        function resetSemuaEditan() { if(confirm("Yakin mau menghapus SEMUA editan dari Database V2?")) { db.ref('ta_text_v2').remove(); db.ref('ta_box_v2').remove(); db.ref('ta_img_v2').remove(); db.ref('ta_dimensi_v2').remove(); setTimeout(()=> location.reload(), 1000); } }
+
+        window.onload = () => { loadSettings(); loadTextEdits(); loadBoxState(); loadImagesState(); showSlide(currentSlideIndex); };
 
         let isEditMode = false; let clickCount = 0; let clickTimer; let activeTextEl = null; let currentFontSizeEm = 1.0; let isMenuVisible = false;
         document.getElementById('secret-trigger').addEventListener('click', () => { clickCount++; clearTimeout(clickTimer); clickTimer = setTimeout(() => { clickCount = 0; }, 600); if (clickCount === 3) { isMenuVisible = !isMenuVisible; document.querySelectorAll('.secret-btn').forEach(btn => btn.style.display = isMenuVisible ? 'flex' : 'none'); clickCount = 0; } });
@@ -590,7 +603,7 @@
         function toggleEditMode() {
             isEditMode = !isEditMode; const btn = document.getElementById('btn-edit'); const svgEdit = document.getElementById('svg-edit'); const svgSave = document.getElementById('svg-save'); const toolbar = document.getElementById('inline-edit-toolbar'); const editableEls = document.querySelectorAll('.editable-target');
             if (isEditMode) { document.body.classList.add('is-editing'); btn.classList.add('editing'); svgEdit.style.display = 'none'; svgSave.style.display = 'block'; toolbar.style.display = 'flex'; editableEls.forEach(el => el.setAttribute('contenteditable', 'true')); } 
-            else { document.body.classList.remove('is-editing'); btn.classList.remove('editing'); svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null; editableEls.forEach(el => el.setAttribute('contenteditable', 'false')); }
+            else { document.body.classList.remove('is-editing'); btn.classList.remove('editing'); svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null; editableEls.forEach(el => el.setAttribute('contenteditable', 'false')); saveTextEdits(); }
         }
         document.querySelectorAll('.editable-target').forEach(el => { el.addEventListener('focus', function() { if(isEditMode) { activeTextEl = this; currentFontSizeEm = parseFloat(window.getComputedStyle(this).fontSize) / 16; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); } }); });
         
@@ -681,13 +694,13 @@
 
         let isDraggingEl = false, startX, startY, currentEl = null;
         function previewImg(event, boxId) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { const imgTemp = new Image(); imgTemp.onload = () => { const canvas = document.createElement('canvas'); let width = imgTemp.width; let height = imgTemp.height; if (width > 1200) { height *= 1200 / width; width = 1200; } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(imgTemp, 0, 0, width, height); applyImageToBox(canvas.toDataURL('image/jpeg', 0.8), boxId); }; imgTemp.src = e.target.result; }; reader.readAsDataURL(file); } }
-        function applyImageToBox(src, boxId) { const box = document.getElementById(boxId); box.classList.add('has-image'); if(box.querySelector('.placeholder-content')) box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`; }
+        function applyImageToBox(src, boxId) { const box = document.getElementById(boxId); box.classList.add('has-image'); if(box.querySelector('.placeholder-content')) box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`; saveImageState(boxId, img); }
 
         document.addEventListener('mousedown', (e) => { if(e.target.classList.contains('draggable-img') && !isEditMode) { isDraggingEl = true; currentEl = e.target; } else if(e.target.classList.contains('drag-handle-card')) { isDraggingEl = true; currentEl = e.target.closest('.draggable-box'); currentEl.classList.add('is-dragging'); } else { return; } startX = e.clientX; startY = e.clientY; e.preventDefault(); });
         document.addEventListener('mousemove', (e) => { if(!isDraggingEl || !currentEl) return; const dx = e.clientX - startX; const dy = e.clientY - startY; let x = parseFloat(currentEl.dataset.x || 0) + dx; let y = parseFloat(currentEl.dataset.y || 0) + dy; if(currentEl.classList.contains('draggable-img')) { let scale = parseFloat(currentEl.dataset.scale || 1); currentEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; } else { currentEl.style.transform = `translate(${x}px, ${y}px)`; } currentEl.dataset.x = x; currentEl.dataset.y = y; startX = e.clientX; startY = e.clientY; });
-        document.addEventListener('mouseup', () => { if(isDraggingEl && currentEl) { if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); } } isDraggingEl = false; currentEl = null; });
-        
-        document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; }, {passive: false}); });
+        document.addEventListener('mouseup', () => { if(isDraggingEl && currentEl) { if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); saveBoxState(currentEl); } else if(currentEl.classList.contains('draggable-img')) { saveImageState(currentEl.parentElement.id, currentEl); } } isDraggingEl = false; currentEl = null; });
+        document.querySelectorAll('.draggable-box').forEach(box => { box.addEventListener('mouseup', () => { if(isEditMode) saveBoxState(box); }); });
+        document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; clearTimeout(wrapper.zoomTimer); wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300); }, {passive: false}); });
         document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } }); });
         document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); }); });
         document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); });
