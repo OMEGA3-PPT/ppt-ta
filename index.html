@@ -240,8 +240,8 @@
             </ul>
             <p><b>3. Lompat Halaman Spesifik:</b></p>
             <ul>
-                <li>"Halaman pertama", "Kedua", "Ketiga", dst...</li>
-                <li>Atau langsung sebut judul: "Latar belakang", "Permasalahan", "Solusi", "Kajian praksis", "Analisis data", dll.</li>
+                <li>"Halaman pertama", "Halaman kedua", "Ketiga", dst...</li>
+                <li>(Peringatan: Pemanggilan judul telah dinonaktifkan agar aman saat presentasi)</li>
             </ul>
         </div>
         
@@ -665,18 +665,18 @@
                 // 3. LOMPAT HALAMAN (Bebas tanpa sebut "halaman" atau pakai "halaman")
                 else {
                     const pageTriggers = [
-                        { index: 0, kw: ["satu", "1", "pertama", "kesatu", "awal", "judul"] },
-                        { index: 1, kw: ["dua", "2", "kedua", "latar belakang"] },
-                        { index: 2, kw: ["tiga", "3", "ketiga", "permasalahan", "masalah"] },
-                        { index: 3, kw: ["empat", "4", "keempat", "solusi", "perancangan"] },
-                        { index: 4, kw: ["lima", "5", "kelima", "identifikasi"] },
-                        { index: 5, kw: ["enam", "6", "keenam", "batasan"] },
-                        { index: 6, kw: ["tujuh", "7", "ketujuh", "rumusan", "tujuan"] },
-                        { index: 7, kw: ["delapan", "8", "kedelapan", "kajian praksis", "praksis"] },
-                        { index: 8, kw: ["sembilan", "9", "kesembilan", "karya relevan", "pembanding"] },
-                        { index: 9, kw: ["sepuluh", "10", "kesepuluh", "metode", "pengumpulan"] },
-                        { index: 10, kw: ["sebelas", "11", "kesebelas", "analisis", "5w", "5 w"] },
-                        { index: 11, kw: ["dua belas", "12", "keduabelas", "penutup", "terima kasih", "akhir"] }
+                        { index: 0, kw: ["satu", "1", "pertama", "kesatu", "awal"] },
+                        { index: 1, kw: ["dua", "2", "kedua"] },
+                        { index: 2, kw: ["tiga", "3", "ketiga"] },
+                        { index: 3, kw: ["empat", "4", "keempat"] },
+                        { index: 4, kw: ["lima", "5", "kelima"] },
+                        { index: 5, kw: ["enam", "6", "keenam"] },
+                        { index: 6, kw: ["tujuh", "7", "ketujuh"] },
+                        { index: 7, kw: ["delapan", "8", "kedelapan"] },
+                        { index: 8, kw: ["sembilan", "9", "kesembilan"] },
+                        { index: 9, kw: ["sepuluh", "10", "kesepuluh"] },
+                        { index: 10, kw: ["sebelas", "11", "kesebelas"] },
+                        { index: 11, kw: ["dua belas", "12", "keduabelas", "akhir"] }
                     ];
 
                     const prefixes = ["halaman ", "slide ", "tampilkan ", "buka ", "ke ", "bagian ", "nomor "];
