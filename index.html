@@ -51,7 +51,7 @@
         .voice-instruction { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; font-size: 0.9em; max-height: 250px; overflow-y: auto; }
         .voice-instruction ul { margin-left: 20px; color: #334155; line-height: 1.5; margin-bottom: 12px; }
         .voice-instruction p { margin-bottom: 5px; color: #1e3a8a; }
-        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        #live-transcript { background: #f1f5f9; padding: 15px; border-radius: 8px; min-height: 60px; margin: 15px 0; font-style: italic; color: #475569; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: bold; text-align: center;}
         .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1.1em; transition: 0.2s; }
         .btn-primary:hover { background: #2563eb; }
         .btn-close { background: transparent; color: #64748b; border: none; margin-top: 10px; cursor: pointer; text-decoration: underline; width: 100%; padding: 5px; }
@@ -87,7 +87,6 @@
         h3.section-title { color: #1e3a8a; margin-bottom: 15px; font-size: 1.4em; border-left: 4px solid #ea580c; padding-left: 12px; }
         p, li { font-size: 1.15em; line-height: 1.6; color: #334155; margin-bottom: 12px; }
         
-        /* SISTEM LIST DINAMIS BERSARANG */
         ul, ol { margin-left: 28px; margin-bottom: 15px; }
         .editable-target ul { list-style-type: disc; } 
         .editable-target ul ul { list-style-type: circle; margin-bottom: 5px; margin-top: 5px; } 
@@ -196,8 +195,11 @@
         @keyframes textPop { to { opacity: 1; transform: scale(1) translateY(0); } }
         @keyframes gradientFlow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
-        .controls { position: absolute; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 25px; z-index: 100; pointer-events: none; }
+        /* SISTEM AUTO-HIDE UNTUK MENU BAWAH */
+        .controls { position: absolute; bottom: 25px; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 25px; z-index: 100; pointer-events: none; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out; }
+        .controls.idle-hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
         .controls > * { pointer-events: auto; }
+        
         button.nav-btn { padding: 12px 30px; font-size: 1.1em; cursor: pointer; background: #2563eb; color: white; border: none; border-radius: 30px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
         button.nav-btn:hover:not(:disabled) { background: #1d4ed8; transform: scale(1.05) translateY(-2px); }
         button.nav-btn:disabled { background: #1e293b; cursor: not-allowed; color: #64748b; box-shadow: none; }
@@ -229,17 +231,17 @@
             <p><b>1. Kontrol Layar (Fokus):</b></p>
             <ul>
                 <li>"Layar mati" / "Layar off"</li>
-                <li>"Layar hidup" / "Layar on" / "Layar nyala"</li>
+                <li>"Layar hidup" / "Layar nyala"</li>
             </ul>
             <p><b>2. Navigasi Dasar:</b></p>
             <ul>
-                <li>"Tampilkan slide selanjutnya" / "Halaman selanjutnya"</li>
-                <li>"Tampilkan slide sebelumnya" / "Halaman sebelumnya"</li>
+                <li>"Selanjutnya" / "Berikutnya" / "Next"</li>
+                <li>"Sebelumnya" / "Kembali" / "Mundur"</li>
             </ul>
             <p><b>3. Lompat Halaman Spesifik:</b></p>
             <ul>
-                <li>"Tampilkan halaman satu" (Sampai <i>halaman dua belas</i>)</li>
-                <li>"Tampilkan latar belakang", "Tampilkan permasalahan", "Tampilkan solusi", "Tampilkan identifikasi masalah", "Tampilkan batasan masalah", "Tampilkan rumusan masalah", "Tampilkan kajian praksis", "Tampilkan karya relevan", "Tampilkan metode", "Tampilkan analisis data", "Tampilkan penutup"</li>
+                <li>"Halaman pertama", "Kedua", "Ketiga", dst...</li>
+                <li>Atau langsung sebut judul: "Latar belakang", "Permasalahan", "Solusi", "Kajian praksis", "Analisis data", dll.</li>
             </ul>
         </div>
         
@@ -561,7 +563,7 @@
         <div class="controls"><button id="prevBtn" class="nav-btn" onclick="changeSlide(-1)">❮ Prev</button><span id="page-num">1 / 12</span><button id="nextBtn" class="nav-btn" onclick="changeSlide(1)">Next ❯</button></div>
     </div>
 
-    <!-- SCRIPT UTAMA (ONLINE V2) -->
+    <!-- SCRIPT UTAMA (ONLINE V3) -->
     <script>
         // INISIALISASI FIREBASE
         const firebaseConfig = {
@@ -574,7 +576,7 @@
         };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-        // 1. SETTINGS & FIREBASE SYNC (MENGGUNAKAN FOLDER _v2 AGAR TIDAK BENTROK)
+        // 1. SETTINGS & FIREBASE SYNC 
         function toggleSettingsPanel() { document.getElementById('settings-modal').style.display = document.getElementById('settings-modal').style.display === 'block' ? 'none' : 'block'; }
         function updateSlideDimensions() {
             const w = document.getElementById('set-width').value; const h = document.getElementById('set-height').value;
@@ -595,14 +597,14 @@
 
         function resetSemuaEditan() { if(confirm("Yakin mau menghapus SEMUA editan dari Database V2?")) { db.ref('ta_text_v2').remove(); db.ref('ta_box_v2').remove(); db.ref('ta_img_v2').remove(); db.ref('ta_dimensi_v2').remove(); setTimeout(()=> location.reload(), 1000); } }
 
-        window.onload = () => { loadSettings(); loadTextEdits(); loadBoxState(); loadImagesState(); showSlide(currentSlideIndex); };
+        window.onload = () => { loadSettings(); loadTextEdits(); loadBoxState(); loadImagesState(); showSlide(currentSlideIndex); resetIdleTimer(); };
 
         let isEditMode = false; let clickCount = 0; let clickTimer; let activeTextEl = null; let currentFontSizeEm = 1.0; let isMenuVisible = false;
         document.getElementById('secret-trigger').addEventListener('click', () => { clickCount++; clearTimeout(clickTimer); clickTimer = setTimeout(() => { clickCount = 0; }, 600); if (clickCount === 3) { isMenuVisible = !isMenuVisible; document.querySelectorAll('.secret-btn').forEach(btn => btn.style.display = isMenuVisible ? 'flex' : 'none'); clickCount = 0; } });
 
         function toggleEditMode() {
             isEditMode = !isEditMode; const btn = document.getElementById('btn-edit'); const svgEdit = document.getElementById('svg-edit'); const svgSave = document.getElementById('svg-save'); const toolbar = document.getElementById('inline-edit-toolbar'); const editableEls = document.querySelectorAll('.editable-target');
-            if (isEditMode) { document.body.classList.add('is-editing'); btn.classList.add('editing'); svgEdit.style.display = 'none'; svgSave.style.display = 'block'; toolbar.style.display = 'flex'; editableEls.forEach(el => el.setAttribute('contenteditable', 'true')); } 
+            if (isEditMode) { document.body.classList.add('is-editing'); btn.classList.add('editing'); svgEdit.style.display = 'none'; svgSave.style.display = 'block'; toolbar.style.display = 'flex'; editableEls.forEach(el => el.setAttribute('contenteditable', 'true')); resetIdleTimer(); } 
             else { document.body.classList.remove('is-editing'); btn.classList.remove('editing'); svgEdit.style.display = 'block'; svgSave.style.display = 'none'; toolbar.style.display = 'none'; activeTextEl = null; editableEls.forEach(el => el.setAttribute('contenteditable', 'false')); saveTextEdits(); }
         }
         document.querySelectorAll('.editable-target').forEach(el => { el.addEventListener('focus', function() { if(isEditMode) { activeTextEl = this; currentFontSizeEm = parseFloat(window.getComputedStyle(this).fontSize) / 16; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); } }); });
@@ -610,6 +612,21 @@
         function formatText(cmd, val = null) { document.execCommand(cmd, false, val); if(activeTextEl) activeTextEl.focus(); }
         function changeActiveFontSize(step) { if(!activeTextEl) return; currentFontSizeEm += step; if(currentFontSizeEm < 0.5) currentFontSizeEm = 0.5; if(currentFontSizeEm > 10.0) currentFontSizeEm = 10.0; activeTextEl.style.fontSize = currentFontSizeEm.toFixed(1) + 'em'; document.getElementById('active-font-val').innerText = currentFontSizeEm.toFixed(1); }
 
+        // SISTEM AUTO-HIDE UI BAWAH
+        let idleTimer;
+        const controlsUI = document.querySelector('.controls');
+        function resetIdleTimer() {
+            controlsUI.classList.remove('idle-hidden');
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                if (!isEditMode) { controlsUI.classList.add('idle-hidden'); }
+            }, 3500); // Hilang setelah 3.5 detik nggk disentuh
+        }
+        document.addEventListener('mousemove', resetIdleTimer);
+        document.addEventListener('touchstart', resetIdleTimer);
+        document.addEventListener('keydown', resetIdleTimer);
+
+        // SISTEM VOICE COMMAND V3 (ANTI BUDEK & SENSITIF)
         let recognition; let isVoiceActive = false; let lastProcessedIndex = 0;
         const micDot = document.getElementById('mic-dot'); const modalCekSound = document.getElementById('mic-test-modal'); const liveTranscript = document.getElementById('live-transcript');
         
@@ -629,46 +646,74 @@
                 if(modalCekSound.style.display === 'block') { liveTranscript.innerText = fullTranscript || "...mendengarkan..."; }
                 let isCommandExecuted = false;
 
-                if (fullTranscript.includes("layar mati") || fullTranscript.includes("layar off") || fullTranscript.includes("layar of") || fullTranscript.includes("layar op") || fullTranscript.includes("layar ov")) { 
+                // 1. KONTROL LAYAR
+                if (fullTranscript.includes("layar mati") || fullTranscript.includes("layar off") || fullTranscript.includes("gelap")) { 
                     document.getElementById("blackout-screen").style.display = "block"; isCommandExecuted = true; 
                 }
                 else if (fullTranscript.includes("layar hidup") || fullTranscript.includes("layar on") || fullTranscript.includes("layar nyala")) { 
                     document.getElementById("blackout-screen").style.display = "none"; isCommandExecuted = true; 
                 }
-                else if (fullTranscript.includes("slide selanjutnya") || fullTranscript.includes("halaman selanjutnya") || fullTranscript.includes("selaid selanjutnya") || fullTranscript.includes("sled selanjutnya") || fullTranscript.includes("slet selanjutnya")) { 
+                
+                // 2. NAVIGASI DASAR (Dibuat Sangat Sensitif & Singkat)
+                else if (fullTranscript.includes("selanjutnya") || fullTranscript.includes("berikutnya") || fullTranscript.includes("lanjut") || fullTranscript.includes("next") || fullTranscript.includes("maju")) { 
                     changeSlide(1); isCommandExecuted = true; 
                 } 
-                else if (fullTranscript.includes("slide sebelumnya") || fullTranscript.includes("halaman sebelumnya") || fullTranscript.includes("selaid sebelumnya") || fullTranscript.includes("sled sebelumnya") || fullTranscript.includes("slet sebelumnya")) { 
+                else if (fullTranscript.includes("sebelumnya") || fullTranscript.includes("kembali") || fullTranscript.includes("mundur") || fullTranscript.includes("prev") || fullTranscript.includes("balik")) { 
                     changeSlide(-1); isCommandExecuted = true; 
                 }
+                
+                // 3. LOMPAT HALAMAN (Bebas tanpa sebut "halaman" atau pakai "halaman")
                 else {
                     const pageTriggers = [
-                        { index: 0, kw: ["halaman satu", "halaman 1", "slide satu", "slide 1", "pertama"] },
-                        { index: 1, kw: ["halaman dua", "halaman 2", "slide dua", "slide 2", "kedua", "latar belakang"] },
-                        { index: 2, kw: ["halaman tiga", "halaman 3", "slide tiga", "slide 3", "ketiga", "permasalahan", "masalah"] },
-                        { index: 3, kw: ["halaman empat", "halaman 4", "slide empat", "slide 4", "keempat", "solusi", "perancangan"] },
-                        { index: 4, kw: ["halaman lima", "halaman 5", "slide lima", "slide 5", "kelima", "identifikasi"] },
-                        { index: 5, kw: ["halaman enam", "halaman 6", "slide enam", "slide 6", "keenam", "batasan"] },
-                        { index: 6, kw: ["halaman tujuh", "halaman 7", "slide tujuh", "slide 7", "ketujuh", "rumusan", "tujuan"] },
-                        { index: 7, kw: ["halaman delapan", "halaman 8", "slide delapan", "slide 8", "kedelapan", "kajian praksis", "praksis", "data verbal"] },
-                        { index: 8, kw: ["halaman sembilan", "halaman 9", "slide sembilan", "slide 9", "kesembilan", "karya relevan", "pembanding"] },
-                        { index: 9, kw: ["halaman sepuluh", "halaman 10", "slide sepuluh", "slide 10", "kesepuluh", "metode", "pengumpulan data"] },
-                        { index: 10, kw: ["halaman sebelas", "halaman 11", "slide sebelas", "slide 11", "kesebelas", "analisis data", "5w"] },
-                        { index: 11, kw: ["halaman dua belas", "halaman 12", "slide dua belas", "slide 12", "keduabelas", "penutup", "terima kasih"] }
+                        { index: 0, kw: ["satu", "1", "pertama", "kesatu", "awal", "judul"] },
+                        { index: 1, kw: ["dua", "2", "kedua", "latar belakang"] },
+                        { index: 2, kw: ["tiga", "3", "ketiga", "permasalahan", "masalah"] },
+                        { index: 3, kw: ["empat", "4", "keempat", "solusi", "perancangan"] },
+                        { index: 4, kw: ["lima", "5", "kelima", "identifikasi"] },
+                        { index: 5, kw: ["enam", "6", "keenam", "batasan"] },
+                        { index: 6, kw: ["tujuh", "7", "ketujuh", "rumusan", "tujuan"] },
+                        { index: 7, kw: ["delapan", "8", "kedelapan", "kajian praksis", "praksis"] },
+                        { index: 8, kw: ["sembilan", "9", "kesembilan", "karya relevan", "pembanding"] },
+                        { index: 9, kw: ["sepuluh", "10", "kesepuluh", "metode", "pengumpulan"] },
+                        { index: 10, kw: ["sebelas", "11", "kesebelas", "analisis", "5w", "5 w"] },
+                        { index: 11, kw: ["dua belas", "12", "keduabelas", "penutup", "terima kasih", "akhir"] }
                     ];
 
+                    const prefixes = ["halaman ", "slide ", "tampilkan ", "buka ", "ke ", "bagian ", "nomor "];
+                    let found = false;
+
                     for (let p of pageTriggers) {
-                        if (p.kw.some(word => fullTranscript.includes("tampilkan " + word))) {
-                            currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; break;
+                        for (let word of p.kw) {
+                            // Kalau dia nyebut judul utuh (minimal 5 huruf)
+                            if (word.length > 4 && fullTranscript.includes(word)) {
+                                currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; found = true; break;
+                            }
+                            // Kalau dia nyebut pake awalan (misal: "halaman dua")
+                            for (let pref of prefixes) {
+                                if (fullTranscript.includes(pref + word)) {
+                                    currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; found = true; break;
+                                }
+                            }
+                            if(found) break;
                         }
+                        if(found) break;
                     }
                 }
 
-                if(isCommandExecuted) { console.log("✅ Dieksekusi: " + fullTranscript); lastProcessedIndex = event.results.length; }
+                // JIKA PERINTAH BERHASIL -> RESTART MIC KILAT BIAR NGGAK LEMOT/BUDEK
+                if(isCommandExecuted) { 
+                    console.log("✅ Dieksekusi: " + fullTranscript); 
+                    lastProcessedIndex = event.results.length; 
+                    // Stop recognition sementara untuk nge-flush memori
+                    recognition.stop(); 
+                }
             };
             
             recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerText = "Error: " + e.error; };
-            recognition.onend = function() { if(isVoiceActive) recognition.start(); };
+            // Auto-Restart Mic kalau mati (termasuk kalau dimatikan paksa pas perintah berhasil di atas)
+            recognition.onend = function() { 
+                if(isVoiceActive) { try { recognition.start(); } catch(e){} } 
+            };
         }
 
         function triggerMicCheck() {
@@ -686,6 +731,7 @@
             slides[index].classList.add('active'); pageNum.innerText = `${index + 1} / 12`; prevBtn.disabled = index === 0; nextBtn.disabled = index === slides.length - 1;
             progressBar.style.width = `${((index) / (slides.length - 1)) * 100}%`;
             if (index === 2) { document.getElementById("count1").innerHTML = "0"; document.getElementById("count2").innerHTML = "0"; setTimeout(() => { animateValue("count1", 0, 35, 1200, false); animateValue("count2", 0, 95.7, 1500, true); }, 400); }
+            resetIdleTimer(); // Pancing timer pas pindah slide
         }
         function changeSlide(step) { let newIndex = currentSlideIndex + step; if (newIndex >= 0 && newIndex < slides.length) { currentSlideIndex = newIndex; showSlide(currentSlideIndex); } }
         function animateValue(id, start, end, duration, isFloat) { let obj = document.getElementById(id); if (!obj) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); let currentVal = start + (progress * (2 - progress)) * (end - start); obj.innerHTML = isFloat ? currentVal.toFixed(1) : Math.floor(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = end; }; window.requestAnimationFrame(step); }
@@ -696,14 +742,14 @@
         function previewImg(event, boxId) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { const imgTemp = new Image(); imgTemp.onload = () => { const canvas = document.createElement('canvas'); let width = imgTemp.width; let height = imgTemp.height; if (width > 1200) { height *= 1200 / width; width = 1200; } canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(imgTemp, 0, 0, width, height); applyImageToBox(canvas.toDataURL('image/jpeg', 0.8), boxId); }; imgTemp.src = e.target.result; }; reader.readAsDataURL(file); } }
         function applyImageToBox(src, boxId) { const box = document.getElementById(boxId); box.classList.add('has-image'); if(box.querySelector('.placeholder-content')) box.querySelector('.placeholder-content').style.display = 'none'; let img = box.querySelector('img.draggable-img'); if(!img) { img = document.createElement('img'); img.className = 'draggable-img'; box.appendChild(img); } img.src = src; img.style.display = 'block'; img.dataset.x = 0; img.dataset.y = 0; img.dataset.scale = 1; img.style.transform = `translate(0px, 0px) scale(1)`; saveImageState(boxId, img); }
 
-        document.addEventListener('mousedown', (e) => { if(e.target.classList.contains('draggable-img') && !isEditMode) { isDraggingEl = true; currentEl = e.target; } else if(e.target.classList.contains('drag-handle-card')) { isDraggingEl = true; currentEl = e.target.closest('.draggable-box'); currentEl.classList.add('is-dragging'); } else { return; } startX = e.clientX; startY = e.clientY; e.preventDefault(); });
+        document.addEventListener('mousedown', (e) => { if(e.target.classList.contains('draggable-img') && !isEditMode) { isDraggingEl = true; currentEl = e.target; } else if(e.target.classList.contains('drag-handle-card')) { isDraggingEl = true; currentEl = e.target.closest('.draggable-box'); currentEl.classList.add('is-dragging'); } else { return; } startX = e.clientX; startY = e.clientY; e.preventDefault(); resetIdleTimer();});
         document.addEventListener('mousemove', (e) => { if(!isDraggingEl || !currentEl) return; const dx = e.clientX - startX; const dy = e.clientY - startY; let x = parseFloat(currentEl.dataset.x || 0) + dx; let y = parseFloat(currentEl.dataset.y || 0) + dy; if(currentEl.classList.contains('draggable-img')) { let scale = parseFloat(currentEl.dataset.scale || 1); currentEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; } else { currentEl.style.transform = `translate(${x}px, ${y}px)`; } currentEl.dataset.x = x; currentEl.dataset.y = y; startX = e.clientX; startY = e.clientY; });
         document.addEventListener('mouseup', () => { if(isDraggingEl && currentEl) { if(currentEl.classList.contains('draggable-box')) { currentEl.classList.remove('is-dragging'); saveBoxState(currentEl); } else if(currentEl.classList.contains('draggable-img')) { saveImageState(currentEl.parentElement.id, currentEl); } } isDraggingEl = false; currentEl = null; });
         document.querySelectorAll('.draggable-box').forEach(box => { box.addEventListener('mouseup', () => { if(isEditMode) saveBoxState(box); }); });
         document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; clearTimeout(wrapper.zoomTimer); wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300); }, {passive: false}); });
-        document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } }); });
-        document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); }); });
-        document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); });
+        document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } resetIdleTimer(); }); });
+        document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); resetIdleTimer(); }); });
+        document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); resetIdleTimer();});
     </script>
 </body>
 </html>
