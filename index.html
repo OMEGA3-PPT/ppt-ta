@@ -272,9 +272,10 @@
     </div>
     
     <div id="settings-modal">
-        <h3 style="color:#1e3a8a; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Pengaturan Bingkai</h3>
+        <h3 style="color:#1e3a8a; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">Pengaturan Bingkai & Fitur</h3>
         <div class="setting-group"><label>Lebar Maksimal <span id="val-width" style="color:#3b82f6;">1400px</span></label><input type="range" id="set-width" min="1000" max="1800" value="1400" step="50" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
         <div class="setting-group"><label>Tinggi Maksimal <span id="val-height" style="color:#3b82f6;">850px</span></label><input type="range" id="set-height" min="600" max="1000" value="850" step="10" oninput="updateSlideDimensions()" onchange="saveSettings()"></div>
+        <div class="setting-group" style="align-items: center; display: flex;"><label style="margin-bottom: 0; flex:1;">Tampilkan Pop-up Mic</label><input type="checkbox" id="set-show-modal" checked onchange="saveSettings()" style="width: 18px; height: 18px; cursor: pointer;"></div>
         <button onclick="toggleSettingsPanel()" style="width: 100%; background: #3b82f6; color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">Tutup</button>
     </div>
 
