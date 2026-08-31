@@ -637,14 +637,42 @@
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
         // 1. SETTINGS & FIREBASE SYNC 
-        function toggleSettingsPanel() { document.getElementById('settings-modal').style.display = document.getElementById('settings-modal').style.display === 'block' ? 'none' : 'block'; }
-        function updateSlideDimensions() {
-            const w = document.getElementById('set-width').value; const h = document.getElementById('set-height').value;
-            document.getElementById('val-width').innerText = w + "px"; document.getElementById('val-height').innerText = h + "px";
-            document.documentElement.style.setProperty('--slide-max-width', w + 'px'); document.documentElement.style.setProperty('--slide-max-height', h + 'px');
+        function toggleSettingsPanel() { 
+            const panel = document.getElementById('settings-modal');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block'; 
         }
-        function saveSettings() { db.ref('ta_dimensi_v2').set({ w: document.getElementById('set-width').value, h: document.getElementById('set-height').value, showMic: document.getElementById('set-show-modal').checked }); }
-        function loadSettings() { db.ref('ta_dimensi_v2').once('value').then((snap) => { const saved = snap.val(); if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; if(saved.showMic !== undefined) { document.getElementById('set-show-modal').checked = saved.showMic; } updateSlideDimensions(); } }); }
+        
+        function updateSlideDimensions() {
+            const w = document.getElementById('set-width').value; 
+            const h = document.getElementById('set-height').value;
+            document.getElementById('val-width').innerText = w + "px"; 
+            document.getElementById('val-height').innerText = h + "px";
+            document.documentElement.style.setProperty('--slide-max-width', w + 'px'); 
+            document.documentElement.style.setProperty('--slide-max-height', h + 'px');
+        }
+        
+        function saveSettings() { 
+            const isShowMicChecked = document.getElementById('set-show-modal').checked;
+            db.ref('ta_dimensi_v2').set({ 
+                w: document.getElementById('set-width').value, 
+                h: document.getElementById('set-height').value,
+                showMic: isShowMicChecked
+            }); 
+        }
+        
+        function loadSettings() { 
+            db.ref('ta_dimensi_v2').once('value').then((snap) => { 
+                const saved = snap.val(); 
+                if(saved) { 
+                    if(saved.w) document.getElementById('set-width').value = saved.w; 
+                    if(saved.h) document.getElementById('set-height').value = saved.h; 
+                    if(saved.showMic !== undefined) {
+                        document.getElementById('set-show-modal').checked = saved.showMic;
+                    }
+                    updateSlideDimensions(); 
+                } 
+            }); 
+        }
 
         function saveTextEdits() { const edits = {}; document.querySelectorAll('.editable-target').forEach(el => { edits[el.id] = { html: el.innerHTML, fs: el.style.fontSize }; }); db.ref('ta_text_v2').set(edits); }
         function loadTextEdits() { db.ref('ta_text_v2').once('value').then((snap) => { const savedText = snap.val(); if (savedText) { document.querySelectorAll('.editable-target').forEach(el => { if (savedText[el.id]) { el.innerHTML = savedText[el.id].html; if(savedText[el.id].fs) el.style.fontSize = savedText[el.id].fs; } }); } }); }
@@ -680,7 +708,7 @@
             clearTimeout(idleTimer);
             idleTimer = setTimeout(() => {
                 if (!isEditMode) { controlsUI.classList.add('idle-hidden'); }
-            }, 3500); // Hilang setelah 3.5 detik nggk disentuh
+            }, 3500);
         }
         document.addEventListener('mousemove', resetIdleTimer);
         document.addEventListener('touchstart', resetIdleTimer);
@@ -714,7 +742,7 @@
                     document.getElementById("blackout-screen").style.display = "none"; isCommandExecuted = true; 
                 }
                 
-                // 2. NAVIGASI DASAR (Dibuat Sangat Sensitif & Singkat)
+                // 2. NAVIGASI DASAR
                 else if (fullTranscript.includes("selanjutnya") || fullTranscript.includes("berikutnya") || fullTranscript.includes("lanjut") || fullTranscript.includes("next") || fullTranscript.includes("maju")) { 
                     changeSlide(1); isCommandExecuted = true; 
                 } 
@@ -722,7 +750,7 @@
                     changeSlide(-1); isCommandExecuted = true; 
                 }
                 
-                // 3. LOMPAT HALAMAN (Bebas tanpa sebut "halaman" atau pakai "halaman")
+                // 3. LOMPAT HALAMAN
                 else {
                     const pageTriggers = [
                         { index: 0, kw: ["satu", "1", "pertama", "kesatu", "awal"] },
@@ -745,11 +773,9 @@
 
                     for (let p of pageTriggers) {
                         for (let word of p.kw) {
-                            // Kalau dia nyebut judul utuh (minimal 5 huruf)
                             if (word.length > 4 && fullTranscript.includes(word)) {
                                 currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; found = true; break;
                             }
-                            // Kalau dia nyebut pake awalan (misal: "halaman dua")
                             for (let pref of prefixes) {
                                 if (fullTranscript.includes(pref + word)) {
                                     currentSlideIndex = p.index; showSlide(p.index); isCommandExecuted = true; found = true; break;
@@ -761,17 +787,14 @@
                     }
                 }
 
-                // JIKA PERINTAH BERHASIL -> RESTART MIC KILAT BIAR NGGAK LEMOT/BUDEK
                 if(isCommandExecuted) { 
                     console.log("✅ Dieksekusi: " + fullTranscript); 
                     lastProcessedIndex = event.results.length; 
-                    // Stop recognition sementara untuk nge-flush memori
                     recognition.stop(); 
                 }
             };
             
             recognition.onerror = function(e) { console.warn("Mic Err:", e.error); if(modalCekSound.style.display === 'block') liveTranscript.innerText = "Error: " + e.error; };
-            // Auto-Restart Mic kalau mati (termasuk kalau dimatikan paksa pas perintah berhasil di atas)
             recognition.onend = function() { 
                 if(isVoiceActive) { try { recognition.start(); } catch(e){} } 
             };
@@ -779,30 +802,53 @@
 
         function triggerMicCheck() {
             if(!recognition) { alert("Browser tidak support Web Speech API."); return; }
+            
+            const isPopupAllowed = document.getElementById('set-show-modal').checked;
+
             if(isVoiceActive) { 
-                isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); 
-                modalCekSound.style.display = 'none'; // Otomatis tutup popup kalau mic dimatikan
+                isVoiceActive = false; 
+                recognition.stop(); 
+                micDot.classList.remove('dot-red'); 
+                micDot.classList.add('dot-green'); 
+                modalCekSound.style.display = 'none'; 
             } else { 
-                if(document.getElementById('set-show-modal').checked) {
-                    modalCekSound.style.display = 'block'; liveTranscript.innerText = "Menunggu suara Anda..."; 
+                if(isPopupAllowed) {
+                    modalCekSound.style.display = 'block'; 
+                    liveTranscript.innerText = "Menunggu suara Anda..."; 
                 } else {
                     modalCekSound.style.display = 'none';
                 }
-                try { recognition.start(); isVoiceActive = true; micDot.classList.remove('dot-green'); micDot.classList.add('dot-red'); } catch(e) { console.log("Recognition running."); } 
+                try { 
+                    recognition.start(); 
+                    isVoiceActive = true; 
+                    micDot.classList.remove('dot-green'); 
+                    micDot.classList.add('dot-red'); 
+                } catch(e) { 
+                    console.log("Recognition running."); 
+                } 
             }
         }
+
         function startRealVoice() { modalCekSound.style.display = 'none'; }
-        function closeMicModal() { modalCekSound.style.display = 'none'; isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); }
+        function closeMicModal() { 
+            modalCekSound.style.display = 'none'; 
+            isVoiceActive = false; 
+            recognition.stop(); 
+            micDot.classList.remove('dot-red'); 
+            micDot.classList.add('dot-green'); 
+        }
 
         let currentSlideIndex = 0; const slides = document.querySelectorAll('.slide');
         const pageNum = document.getElementById('page-num'); const prevBtn = document.getElementById('prevBtn'); const nextBtn = document.getElementById('nextBtn'); const progressBar = document.getElementById('progress-bar');
+        
         function showSlide(index) {
             slides.forEach(slide => { slide.classList.remove('active', 'is-focusing'); slide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); });
             slides[index].classList.add('active'); pageNum.innerText = `${index + 1} / 13`; prevBtn.disabled = index === 0; nextBtn.disabled = index === slides.length - 1;
             progressBar.style.width = `${((index) / (slides.length - 1)) * 100}%`;
             if (index === 2) { document.getElementById("count1").innerHTML = "0"; document.getElementById("count2").innerHTML = "0"; setTimeout(() => { animateValue("count1", 0, 35, 1200, false); animateValue("count2", 0, 95.7, 1500, true); }, 400); }
-            resetIdleTimer(); // Pancing timer pas pindah slide
+            resetIdleTimer();
         }
+        
         function changeSlide(step) { let newIndex = currentSlideIndex + step; if (newIndex >= 0 && newIndex < slides.length) { currentSlideIndex = newIndex; showSlide(currentSlideIndex); } }
         function animateValue(id, start, end, duration, isFloat) { let obj = document.getElementById(id); if (!obj) return; let startTimestamp = null; const step = (timestamp) => { if (!startTimestamp) startTimestamp = timestamp; const progress = Math.min((timestamp - startTimestamp) / duration, 1); let currentVal = start + (progress * (2 - progress)) * (end - start); obj.innerHTML = isFloat ? currentVal.toFixed(1) : Math.floor(currentVal); if (progress < 1) window.requestAnimationFrame(step); else obj.innerHTML = end; }; window.requestAnimationFrame(step); }
 
@@ -819,8 +865,8 @@
         document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; clearTimeout(wrapper.zoomTimer); wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300); }, {passive: false}); });
         document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } resetIdleTimer(); }); });
         document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); resetIdleTimer(); }); });
+        
         // --- JALUR BELAKANG: KONTROL HEADSET TWS (MEDIA SESSION API) ---
-        // Ini sistem khusus buat nangkep sinyal sentuh dari Bluetooth TWS
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler('play', () => { 
                 triggerMicCheck(); resetIdleTimer(); 
@@ -835,6 +881,7 @@
                 changeSlide(-1); resetIdleTimer(); 
             });
         }
+        
         document.addEventListener('keydown', (e) => { 
             if (isEditMode) return; 
             
@@ -846,20 +893,14 @@
             if (e.key.toLowerCase() === 'm') triggerMicCheck(); 
             
             // --- KONTROL HEADSET TWS ---
-            
-            // 1. Ketuk 2x (Play/Pause) = Nyala/Matiin Mic Voice Command
             if (e.key === 'MediaPlayPause') {
                 e.preventDefault(); 
                 triggerMicCheck();
             }
-            
-            // 2. Tahan Kanan (Next Track) = Slide Selanjutnya
             if (e.key === 'MediaTrackNext') {
                 e.preventDefault();
                 changeSlide(1);
             }
-            
-            // 3. Tahan Kiri (Prev Track) = Slide Sebelumnya
             if (e.key === 'MediaTrackPrevious') {
                 e.preventDefault();
                 changeSlide(-1);
