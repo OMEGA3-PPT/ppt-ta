@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TelePresent - Handsfree Presentation Maker</title>
+    <!-- Firebase SDK (Perlu Auth & Database) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; background: #f1f5f9; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* NAVBAR / TOOLBAR */
+        #top-bar { background: #1e293b; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .toolbar-group { display: flex; gap: 10px; align-items: center; }
+        button { background: #3b82f6; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2563eb; }
+        button.btn-danger { background: #ef4444; }
+        button.btn-success { background: #10b981; }
+
+        /* AREA PRESENTASI */
+        #workspace { flex: 1; position: relative; display: flex; justify-content: center; align-items: center; background: #cbd5e1; overflow: hidden; }
+        #slide-container { position: relative; width: 1000px; height: 600px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+        
+        .slide { position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: none; background: #ffffff; }
+        .slide.active { display: block; }
+        
+        .draggable-element { position: absolute; min-width: 150px; min-height: 50px; padding: 10px; border: 1px dashed transparent; cursor: text; }
+        .is-editing .draggable-element { border-color: #3b82f6; background: rgba(59,130,246,0.05); }
+        .drag-handle { position: absolute; top: -10px; left: -10px; width: 20px; height: 20px; background: #ea580c; border-radius: 50%; cursor: move; display: none; }
+        .is-editing .drag-handle { display: block; }
+
+        /* UI LOGIN SCREEN POP-UP MODERN */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: white; color: #333; padding: 40px; border-radius: 20px; width: 100%; max-width: 380px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); display: flex; flex-direction: column; align-items: center; }
+        
+        .sparkle-icon { width: 32px; height: 32px; margin-bottom: 20px; }
+        .login-title { font-size: 1.8em; color: #0f172a; margin: 0 0 8px 0; font-weight: 800; letter-spacing: -0.5px; }
+        .login-subtitle { color: #64748b; font-size: 0.9em; margin-bottom: 30px; }
+
+        /* Form Inputs */
+        .input-group { width: 100%; margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 0.8em; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper input { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95em; outline: none; transition: 0.2s; }
+        .input-wrapper input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .show-pw { position: absolute; right: 15px; cursor: pointer; color: #94a3b8; user-select: none; font-size: 1.2em; }
+        .show-pw:hover { color: #0f172a; }
+
+        /* Checkbox & Forgot PW */
+        .login-options { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; margin-bottom: 25px; color: #64748b; }
+        .login-options label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .login-options a { color: #0f172a; text-decoration: none; font-weight: 600; }
+        
+        /* Tombol Modern */
+        .btn-modern { width: 100%; padding: 12px; border-radius: 10px; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+        .btn-black { background: #0f172a; color: white; border: 2px solid #0f172a; }
+        .btn-black:hover { background: #1e293b; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
+        .btn-google { background: white; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .btn-google:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        .signup-text { font-size: 0.8em; color: #64748b; margin-top: 15px; }
+        .signup-text a { color: #0f172a; font-weight: 700; text-decoration: none; }
+        .offline-text { font-size: 0.8em; color: #94a3b8; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+        .offline-text:hover { color: #ef4444; }
+    </style>
+</head>
+<body class="is-editing">
+
+    <!-- OVERLAY LOGIN POP-UP MODERN -->
+    <div id="login-screen">
+        <div class="login-box">
+            <!-- Ikon Sparkle -->
+            <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#0f172a"/>
+            </svg>
+            
+            <h2 class="login-title">Welcome back!</h2>
+            <p class="login-subtitle">Please enter your details</p>
+            
+            <!-- Input Email -->
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-wrapper">
+                    <input type="email" placeholder="anna@gmail.com" id="email-input">
+                </div>
+            </div>
+
+            <!-- Input Password & Mata Show PW -->
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <input type="password" placeholder="••••••••" id="pw-input">
+                    <!-- Icon Mata (Pakai fungsi onlick js di bawah) -->
+                    <span class="show-pw" onclick="togglePassword()">👁️</span>
+                </div>
+            </div>
+
+            <div class="login-options">
+                <label><input type="checkbox"> Remember for 30 days</label>
+                <a href="#">Forgot password?</a>
+            </div>
+            
+            <!-- Tombol Login Hitam (Saat ini dummy) -->
+            <button class="btn-modern btn-black" onclick="alert('Fitur Email/Password belum aktif. Silakan pakai Google Login di bawah.')">Log In</button>
+            
+            <!-- Tombol Login Google (Yang asli) -->
+            <button class="btn-modern btn-google" onclick="loginGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.93l3.68-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.07l3.68 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Log in with Google
+            </button>
+            
+            <p class="signup-text">Don't have an account? <a href="#">Sign up</a></p>
+            <p class="offline-text" onclick="lanjutTanpaLogin()">Coba Tanpa Save (Offline)</p>
+        </div>
+    </div>
+
+    <!-- TOOLBAR ATAS -->
+    <div id="top-bar">
+        <div class="toolbar-group">
+            <strong style="font-size: 1.2em; margin-right: 20px;">TelePresent</strong>
+            <button onclick="tambahSlide()">+ Slide Baru</button>
+            <button onclick="tambahTeks()">+ Tambah Teks</button>
+            <!-- Fitur Varian List / Font nanti bisa dimasukkan ke dalam dropdown di sini -->
+        </div>
+        <div class="toolbar-group">
+            <button class="btn-success" onclick="nyalakanMic()">Mic TWS / Voice</button>
+            <button onclick="downloadOffline()">⬇ Download Offline (HTML)</button>
+            <button class="btn-danger" id="btn-logout" onclick="logout()" style="display:none;">Logout</button>
+            <span id="user-info" style="font-size: 0.9em; color: #cbd5e1;"></span>
+        </div>
+    </div>
+
+    <!-- AREA KERJA (CANVAS) -->
+    <div id="workspace">
+        <div id="slide-container">
+            <!-- Slide 1 (Default) -->
+            <div class="slide active" id="slide-1" data-id="1">
+                <div class="draggable-element" style="top: 250px; left: 300px; font-size: 2em; font-weight: bold;" contenteditable="true">
+                    <div class="drag-handle"></div>
+                    Judul Presentasi Anda
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGASI BAWAH -->
+    <div id="bottom-nav">
+        <button onclick="gantiSlide(-1)">❮ Prev</button>
+        <span id="page-indicator" style="margin: 0 20px; font-weight: bold;">Slide 1 / 1</span>
+        <button onclick="gantiSlide(1)">Next ❯</button>
+        <button onclick="toggleModeEdit()" style="margin-left: 30px; background: #ea580c;">Mode Presentasi (Lock)</button>
+    </div>
+
+    <script>
+        // INISIALISASI FIREBASE BARU (TelePresent)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCRZjE7b5Cj0JAayDtZBr7oFHkdipLGq-8",
+          authDomain: "telepresent-app.firebaseapp.com",
+          databaseURL: "https://telepresent-app-default-rtdb.firebaseio.com",
+          projectId: "telepresent-app",
+          storageBucket: "telepresent-app.firebasestorage.app",
+          messagingSenderId: "78602389906",
+          appId: "1:78602389906:web:a5769d7558457027ec594b"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const auth = firebase.auth();
+        const db = firebase.database();
+        let currentUserUID = null;
+
+        // ==========================================
+        // 1. SISTEM AUTENTIKASI (GOOGLE LOGIN)
+        // ==========================================
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUserUID = user.uid;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('btn-logout').style.display = 'block';
+                document.getElementById('user-info').innerText = user.email;
+                loadDataCloud(); // Panggil data miliknya sendiri
+            } else {
+                currentUserUID = null;
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('btn-logout').style.display = 'none';
+                document.getElementById('user-info').innerText = "";
+            }
+        });
+
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch((error) => alert("Gagal Login: " + error.message));
+        }
+
+        function logout() { auth.signOut(); }
+
+        function lanjutTanpaLogin() {
+            document.getElementById('login-screen').style.display = 'none';
+            alert("Mode Offline: Perubahan tidak akan tersimpan di Cloud.");
+        }
+
+        // ==========================================
+        // 2. SISTEM DATABASE ISOLASI (SaaS Core)
+        // ==========================================
+        function autoSaveToCloud() {
+            if(!currentUserUID) return; // Kalau mode offline, nggak nge-save
+            
+            // Simpan HANYA ke folder/laci milik user ini
+            const containerHtml = document.getElementById('slide-container').innerHTML;
+            db.ref('users/' + currentUserUID + '/presentation_data').set({
+                html: containerHtml,
+                lastUpdate: Date.now()
+            });
+        }
+
+        function loadDataCloud() {
+            db.ref('users/' + currentUserUID + '/presentation_data').once('value').then((snap) => {
+                if(snap.exists()) {
+                    document.getElementById('slide-container').innerHTML = snap.val().html;
+                    updateSlideIndicator();
+                    setupDragEvents(); // Pasang ulang sensor drag
+                }
+            });
+        }
+
+        // Pancing Auto-save setiap ada ketikan
+        document.getElementById('slide-container').addEventListener('input', () => {
+            clearTimeout(window.saveTimer);
+            window.saveTimer = setTimeout(autoSaveToCloud, 2000); // Save otomatis tiap 2 detik setelah ngetik
+        });
+
+        // ==========================================
+        // 3. FITUR DINAMIS: TAMBAH SLIDE & TEKS
+        // ==========================================
+        let slideCount = 1;
+        function tambahSlide() {
+            slideCount++;
+            const newSlide = document.createElement('div');
+            newSlide.className = 'slide';
+            newSlide.id = 'slide-' + slideCount;
+            newSlide.innerHTML = `<div class="draggable-element" style="top: 50px; left: 50px; font-size: 1.5em;" contenteditable="true"><div class="drag-handle"></div>Teks Slide ${slideCount}</div>`;
+            document.getElementById('slide-container').appendChild(newSlide);
+            
+            // Langsung pindah ke slide baru
+            currentSlideIndex = slideCount - 1;
+            renderSlides();
+            setupDragEvents();
+            autoSaveToCloud();
+        }
+
+        function tambahTeks() {
+            const activeSlide = document.querySelector('.slide.active');
+            if(!activeSlide) return;
+            const newText = document.createElement('div');
+            newText.className = 'draggable-element';
+            newText.style.top = '100px'; newText.style.left = '100px';
+            newText.contentEditable = "true";
+            newText.innerHTML = '<div class="drag-handle"></div>Ketik sesuatu...';
+            activeSlide.appendChild(newText);
+            setupDragEvents();
+            autoSaveToCloud();
+        }
+
+        // ==========================================
+        // 4. NAVIGASI SLIDE
+        // ==========================================
+        let currentSlideIndex = 0;
+        function renderSlides() {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((s, idx) => {
+                s.classList.remove('active');
+                if(idx === currentSlideIndex) s.classList.add('active');
+            });
+            updateSlideIndicator();
+        }
+
+        function gantiSlide(step) {
+            const slides = document.querySelectorAll('.slide');
+            currentSlideIndex += step;
+            if(currentSlideIndex < 0) currentSlideIndex = 0;
+            if(currentSlideIndex >= slides.length) currentSlideIndex = slides.length - 1;
+            renderSlides();
+        }
+
+        function updateSlideIndicator() {
+            const total = document.querySelectorAll('.slide').length;
+            document.getElementById('page-indicator').innerText = `Slide ${currentSlideIndex + 1} / ${total}`;
+        }
+
+        // ==========================================
+        // 5. FITUR DOWNLOAD OFFLINE (BUNDLING)
+        // ==========================================
+        function downloadOffline() {
+            // Ambil semua elemen dan jadikan 1 file HTML utuh
+            let htmlContent = document.documentElement.outerHTML;
+            // Buang overlay login biar file offline-nya langsung kebuka presentasinya
+            htmlContent = htmlContent.replace('<div id="login-screen"', '<div id="login-screen" style="display:none;"');
+            
+            const blob = new Blob([htmlContent], {type: "text/html"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "TelePresent_Offline.html";
+            a.click();
+        }
+
+        function toggleModeEdit() {
+            const isEditing = document.body.classList.toggle('is-editing');
+            document.querySelectorAll('.draggable-element').forEach(el => el.contentEditable = isEditing);
+        }
+
+        // ==========================================
+        // 6. LOGIKA DRAG & DROP & MEDIA SESSION (TWS)
+        // ==========================================
+        // Drag logic sederhana
+        let isDragging = false; let currentEl = null; let offsetX, offsetY;
+        function setupDragEvents() {
+            document.querySelectorAll('.drag-handle').forEach(handle => {
+                handle.onmousedown = (e) => {
+                    isDragging = true;
+                    currentEl = e.target.parentElement;
+                    offsetX = e.clientX - currentEl.getBoundingClientRect().left;
+                    offsetY = e.clientY - currentEl.getBoundingClientRect().top;
+                };
+            });
+        }
+        document.onmousemove = (e) => {
+            if(!isDragging || !currentEl) return;
+            const containerBox = document.getElementById('slide-container').getBoundingClientRect();
+            let x = e.clientX - containerBox.left - offsetX;
+            let y = e.clientY - containerBox.top - offsetY;
+            currentEl.style.left = x + 'px';
+            currentEl.style.top = y + 'px';
+        };
+        document.onmouseup = () => { if(isDragging) { isDragging = false; autoSaveToCloud(); } };
+        
+        // Inisialisasi awal
+        setupDragEvents();
+
+        // TWS & Keyboard Control
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('nexttrack', () => { gantiSlide(1); });
+            navigator.mediaSession.setActionHandler('previoustrack', () => { gantiSlide(-1); });
+            // Play/Pause buat nyalain mic
+        }
+        document.addEventListener('keydown', (e) => {
+            if(!document.body.classList.contains('is-editing')) {
+                if (e.key === 'ArrowRight' || e.key === 'MediaTrackNext') gantiSlide(1);
+                if (e.key === 'ArrowLeft' || e.key === 'MediaTrackPrevious') gantiSlide(-1);
+            }
+        });
+        
+        // Note: Script Voice Command (SpeechRecognition) bisa lu paste ulang dari project sebelumnya ke sini.
+        function nyalakanMic() { alert("Fungsi Web Speech API dipanggil..."); /* Panggil logika mic lu */ }
+
+        // Fungsi buat ngintip password (Mata di klik)
+        function togglePassword() {
+            const pwInput = document.getElementById('pw-input');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+            } else {
+                pwInput.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>
