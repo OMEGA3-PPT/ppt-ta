@@ -779,8 +779,17 @@
 
         function triggerMicCheck() {
             if(!recognition) { alert("Browser tidak support Web Speech API."); return; }
-            if(isVoiceActive) { isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); } 
-            else { modalCekSound.style.display = 'block'; liveTranscript.innerText = "Menunggu suara Anda..."; try { recognition.start(); isVoiceActive = true; micDot.classList.remove('dot-green'); micDot.classList.add('dot-red'); } catch(e) { console.log("Recognition running."); } }
+            if(isVoiceActive) { 
+                isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); 
+                modalCekSound.style.display = 'none'; // Otomatis tutup popup kalau mic dimatikan
+            } else { 
+                if(document.getElementById('set-show-modal').checked) {
+                    modalCekSound.style.display = 'block'; liveTranscript.innerText = "Menunggu suara Anda..."; 
+                } else {
+                    modalCekSound.style.display = 'none';
+                }
+                try { recognition.start(); isVoiceActive = true; micDot.classList.remove('dot-green'); micDot.classList.add('dot-red'); } catch(e) { console.log("Recognition running."); } 
+            }
         }
         function startRealVoice() { modalCekSound.style.display = 'none'; }
         function closeMicModal() { modalCekSound.style.display = 'none'; isVoiceActive = false; recognition.stop(); micDot.classList.remove('dot-red'); micDot.classList.add('dot-green'); }
