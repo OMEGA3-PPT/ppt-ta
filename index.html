@@ -809,7 +809,38 @@
         document.querySelectorAll('.img-wrapper').forEach(wrapper => { wrapper.addEventListener('wheel', (e) => { let img = wrapper.querySelector('img.draggable-img'); if(!img || isEditMode) return; e.preventDefault(); let scale = parseFloat(img.dataset.scale || 1); scale += e.deltaY * -0.002; scale = Math.min(Math.max(0.2, scale), 5); img.dataset.scale = scale; let x = parseFloat(img.dataset.x || 0); let y = parseFloat(img.dataset.y || 0); img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`; clearTimeout(wrapper.zoomTimer); wrapper.zoomTimer = setTimeout(() => { if(img) saveImageState(wrapper.id, img); }, 300); }, {passive: false}); });
         document.querySelectorAll('.focusable').forEach(item => { item.addEventListener('click', function(e) { if (isEditMode) return; e.stopPropagation(); const parentSlide = this.closest('.slide'); if(this.classList.contains('focused')) { this.classList.remove('focused'); parentSlide.classList.remove('is-focusing'); } else { parentSlide.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); this.classList.add('focused'); parentSlide.classList.add('is-focusing'); } resetIdleTimer(); }); });
         document.querySelectorAll('.slide').forEach(slide => { slide.addEventListener('click', function(e) { if (isEditMode) return; this.classList.remove('is-focusing'); this.querySelectorAll('.focusable').forEach(el => el.classList.remove('focused')); resetIdleTimer(); }); });
-        document.addEventListener('keydown', (e) => { if (isEditMode) return; if (e.key === 'ArrowRight') changeSlide(1); if (e.key === 'ArrowLeft') changeSlide(-1); resetIdleTimer();});
+        document.addEventListener('keydown', (e) => { 
+            if (isEditMode) return; 
+            
+            // Kontrol Keyboard Biasa (Panah)
+            if (e.key === 'ArrowRight') changeSlide(1); 
+            if (e.key === 'ArrowLeft') changeSlide(-1); 
+            
+            // Kontrol Mouse Macro (Huruf M)
+            if (e.key.toLowerCase() === 'm') triggerMicCheck(); 
+            
+            // --- KONTROL HEADSET TWS ---
+            
+            // 1. Ketuk 2x (Play/Pause) = Nyala/Matiin Mic Voice Command
+            if (e.key === 'MediaPlayPause') {
+                e.preventDefault(); 
+                triggerMicCheck();
+            }
+            
+            // 2. Tahan Kanan (Next Track) = Slide Selanjutnya
+            if (e.key === 'MediaTrackNext') {
+                e.preventDefault();
+                changeSlide(1);
+            }
+            
+            // 3. Tahan Kiri (Prev Track) = Slide Sebelumnya
+            if (e.key === 'MediaTrackPrevious') {
+                e.preventDefault();
+                changeSlide(-1);
+            }
+
+            resetIdleTimer();
+        });
     </script>
 </body>
 </html>
