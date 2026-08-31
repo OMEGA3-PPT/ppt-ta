@@ -643,8 +643,8 @@
             document.getElementById('val-width').innerText = w + "px"; document.getElementById('val-height').innerText = h + "px";
             document.documentElement.style.setProperty('--slide-max-width', w + 'px'); document.documentElement.style.setProperty('--slide-max-height', h + 'px');
         }
-        function saveSettings() { db.ref('ta_dimensi_v2').set({ w: document.getElementById('set-width').value, h: document.getElementById('set-height').value }); }
-        function loadSettings() { db.ref('ta_dimensi_v2').once('value').then((snap) => { const saved = snap.val(); if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; updateSlideDimensions(); } }); }
+        function saveSettings() { db.ref('ta_dimensi_v2').set({ w: document.getElementById('set-width').value, h: document.getElementById('set-height').value, showMic: document.getElementById('set-show-modal').checked }); }
+        function loadSettings() { db.ref('ta_dimensi_v2').once('value').then((snap) => { const saved = snap.val(); if(saved) { document.getElementById('set-width').value = saved.w; document.getElementById('set-height').value = saved.h; if(saved.showMic !== undefined) { document.getElementById('set-show-modal').checked = saved.showMic; } updateSlideDimensions(); } }); }
 
         function saveTextEdits() { const edits = {}; document.querySelectorAll('.editable-target').forEach(el => { edits[el.id] = { html: el.innerHTML, fs: el.style.fontSize }; }); db.ref('ta_text_v2').set(edits); }
         function loadTextEdits() { db.ref('ta_text_v2').once('value').then((snap) => { const savedText = snap.val(); if (savedText) { document.querySelectorAll('.editable-target').forEach(el => { if (savedText[el.id]) { el.innerHTML = savedText[el.id].html; if(savedText[el.id].fs) el.style.fontSize = savedText[el.id].fs; } }); } }); }
